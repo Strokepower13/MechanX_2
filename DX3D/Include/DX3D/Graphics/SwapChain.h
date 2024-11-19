@@ -9,7 +9,7 @@ class SwapChain
 {
 public:
 	//initialize SwapChain for a window
-	SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system, bool enable4xMsaa);
+	SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system);
 
 	void setFullscreen(bool fullscreen, unsigned int width, unsigned int height);
 	void resize(unsigned int width, unsigned int height);

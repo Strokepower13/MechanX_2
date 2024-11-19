@@ -35,28 +35,14 @@ CommandManager::~CommandManager()
 {
 }
 
-void CommandManager::reset(const SwapChainPtr& swapChain)
+void CommandManager::reset()
 {
 	p_directCmdListAlloc->Reset();
 	p_commandList->Reset(p_directCmdListAlloc.Get(), nullptr);
-
-	//D3D12_RESOURCE_BARRIER resBar;
-	//ZeroMemory(&resBar, sizeof(resBar));
-	//resBar.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//resBar.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//resBar.Transition.pResource = swapChain->currentBackBuffer();
-	//resBar.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
-	//resBar.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	//resBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-
-	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	p_commandList->ResourceBarrier(1, &barrier);
 }
 
 void CommandManager::setViewportSize(const SwapChainPtr& swapChain)
 {
-	this->reset(swapChain);
-
 	p_commandList->RSSetViewports(1, &swapChain->p_screenViewport);
 	p_commandList->RSSetScissorRects(1, &swapChain->p_scissorRect);
 }
@@ -71,16 +57,17 @@ void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, float
 	p_commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 	p_commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	p_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
+}
 
-	//D3D12_RESOURCE_BARRIER resBar;
-	//ZeroMemory(&resBar, sizeof(resBar));
-	//resBar.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//resBar.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//resBar.Transition.pResource = swapChain->currentBackBuffer();
-	//resBar.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	//resBar.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	//resBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+void CommandManager::begin(const SwapChainPtr& swapChain)
+{
+	this->reset();
+	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+	p_commandList->ResourceBarrier(1, &barrier);
+}
 
+void CommandManager::finish(const SwapChainPtr& swapChain)
+{
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	p_commandList->ResourceBarrier(1, &barrier);
 
@@ -88,8 +75,6 @@ void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, float
 
 	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
 	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
-
-	swapChain->present(true);
 }
 
 void CommandManager::flushCommandQueue()

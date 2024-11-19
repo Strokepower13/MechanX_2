@@ -23,7 +23,7 @@ public:
 	~RenderSystem();
 
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
-	SwapChainPtr createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height);
+	//SwapChainPtr createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height);
 	CommandManagerPtr getCommandMgr();
 	//DeviceContextPtr getImmediateDeviceContext();
 

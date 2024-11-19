@@ -19,6 +19,10 @@ void InitD3D::onUpdate(float deltaTime)
 	
 	auto scptr = getDisplay()->getSwapChain();
 
+	commMgr->begin(scptr);
 	commMgr->setViewportSize(scptr);
 	commMgr->clearRenderTargetColor(scptr, 0.5f, 0.0f, 0.0f, 1.0f);
+	commMgr->finish(scptr);
+
+	scptr->present(true);
 }

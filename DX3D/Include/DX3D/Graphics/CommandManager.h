@@ -10,11 +10,13 @@ public:
 	~CommandManager();
 
 public:
-	void reset(const SwapChainPtr& swapChain);
 	void setViewportSize(const SwapChainPtr& swapChain);
 	void clearRenderTargetColor(const SwapChainPtr& swapChain, float red, float green, float blue, float alpha);
+	void begin(const SwapChainPtr& swapChain);
+	void finish(const SwapChainPtr& swapChain);
 
 protected:
+	void reset();
 	void flushCommandQueue();
 
 private:

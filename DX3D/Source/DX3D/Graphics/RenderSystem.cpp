@@ -89,13 +89,13 @@ RenderSystem::~RenderSystem()
 
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
-    return std::make_shared <SwapChain>(hwnd, width, height, this, false);
+    return std::make_shared <SwapChain>(hwnd, width, height, this);
 }
 
-SwapChainPtr RenderSystem::createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height)
-{
-    return std::make_shared <SwapChain>(hwnd, width, height, this, true);
-}
+//SwapChainPtr RenderSystem::createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height)
+//{
+//    return std::make_shared <SwapChain>(hwnd, width, height, this, true);
+//}
 
 CommandManagerPtr RenderSystem::getCommandMgr()
 {

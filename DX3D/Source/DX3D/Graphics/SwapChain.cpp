@@ -6,8 +6,7 @@
 #include <sstream>
 #include <d3dx12.h>
 
-SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system, bool enable4xMsaa) :p_system(system),
-p_enable4xMsaa(enable4xMsaa)
+SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system) :p_system(system)
 {
 	//p_swapChain.Reset();
 
@@ -16,8 +15,8 @@ p_enable4xMsaa(enable4xMsaa)
 
 	DXGI_SWAP_CHAIN_DESC sd;
 	ZeroMemory(&sd, sizeof(sd));
-	sd.BufferDesc.Width = width;
-	sd.BufferDesc.Height = height;
+	sd.BufferDesc.Width = (width > 1) ? width : 1;
+	sd.BufferDesc.Height = (height > 1) ? height : 1;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = p_system->p_backBufferFormat;
@@ -39,7 +38,6 @@ p_enable4xMsaa(enable4xMsaa)
 	if(p_swapChain==nullptr)
 		DX3DError("SwapChain not created successfully.");
 	
-	//reloadBuffers(width, height);
 	resize(width, height);
 }
 
@@ -67,16 +65,14 @@ void SwapChain::resize(unsigned int width, unsigned int height)
 	
 	p_currBackBuffer = 0;
 
-	//auto rtvHeapHandle = p_system->p_descriptorHeap->renderTargetView();
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(p_system->p_descriptorHeap->p_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-	for (UINT i = 0; i < p_swapChainBufferCount; i++)
+	for (int i = 0; i < p_swapChainBufferCount; i++)
 	{
 		hr = p_swapChain->GetBuffer(i, IID_PPV_ARGS(&p_swapChainBuffer[i]));
 		if (FAILED(hr))
 			DX3DError("SwapChain not created successfully.");
 
 		p_system->p_d3dDevice->CreateRenderTargetView(p_swapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
-		//rtvHeapHandle.ptr += (1 * p_system->p_descriptorHeap->p_rtvDescriptorSize);
 		rtvHeapHandle.Offset(1, p_system->p_descriptorHeap->p_rtvDescriptorSize);
 	}
 
@@ -116,13 +112,6 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	optClear.DepthStencil.Depth = 1.0f;
 	optClear.DepthStencil.Stencil = 0;
 
-	//D3D12_HEAP_PROPERTIES heapProps;
-	//heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
-	//heapProps.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
-	//heapProps.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
-	//heapProps.CreationNodeMask = 1;
-	//heapProps.VisibleNodeMask = 1;
-
 	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc,
 		D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(p_depthStencilBuffer.GetAddressOf()));
@@ -136,17 +125,7 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	dsvDesc.Texture2D.MipSlice = 0;
 	
 	device->CreateDepthStencilView(p_depthStencilBuffer.Get(), &dsvDesc, p_system->p_descriptorHeap->depthStencilView());
-	
-	//D3D12_RESOURCE_BARRIER resBar;
-	//ZeroMemory(&resBar, sizeof(resBar));
-	//resBar.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-	//resBar.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-	//resBar.Transition.pResource = p_depthStencilBuffer.Get();
-	//resBar.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-	//resBar.Transition.StateAfter = D3D12_RESOURCE_STATE_DEPTH_WRITE;
-	//resBar.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
-	//p_system->p_commandMgr->p_commandList->ResourceBarrier(1, &resBar);
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(p_depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 	p_system->p_commandMgr->p_commandList->ResourceBarrier(1, &barrier);
 	
