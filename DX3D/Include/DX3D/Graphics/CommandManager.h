@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <wrl.h>
 #include <DX3D/Prerequisites.h>
+#include <DirectXColors.h>
 
 class CommandManager
 {
@@ -12,6 +13,7 @@ public:
 public:
 	void setViewportSize(const SwapChainPtr& swapChain);
 	void clearRenderTargetColor(const SwapChainPtr& swapChain, float red, float green, float blue, float alpha);
+	void clearRenderTargetColor(const SwapChainPtr& swapChain, DirectX::XMVECTORF32 color);
 	void begin(const SwapChainPtr& swapChain);
 	void finish(const SwapChainPtr& swapChain);
 
@@ -29,5 +31,6 @@ private:
 	UINT64 p_currentFence = 0;
 
 	friend class SwapChain;
+	friend class RenderSystem;
 };
 

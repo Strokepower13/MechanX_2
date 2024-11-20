@@ -6,7 +6,6 @@
 class SwapChain;
 class CommandManager;
 class DescriptorHeap;
-class DeviceContext;
 class VertexBuffer;
 class IndexBuffer;
 class ConstantBuffer;
@@ -33,7 +32,6 @@ class DepthStencilState;
 typedef std::shared_ptr <SwapChain> SwapChainPtr;
 typedef std::shared_ptr <CommandManager> CommandManagerPtr;
 typedef std::shared_ptr <DescriptorHeap> DescriptorHeapPtr;
-typedef std::shared_ptr <DeviceContext> DeviceContextPtr;
 typedef std::shared_ptr <VertexBuffer> VertexBufferPtr;
 typedef std::shared_ptr <IndexBuffer> IndexBufferPtr;
 typedef std::shared_ptr <ConstantBuffer> ConstantBufferPtr;

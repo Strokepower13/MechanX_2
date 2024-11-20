@@ -53,8 +53,6 @@ private:
 	Microsoft::WRL::ComPtr<IDXGIFactory4> p_dxgiFactory;
 	Microsoft::WRL::ComPtr<ID3D12Device> p_d3dDevice;
 
-	UINT p_cbvSrvUavDescriptorSize = 0;
-
 	bool p_4xMsaaState = false;
 	UINT p_4xMsaaQuality = 0;
 

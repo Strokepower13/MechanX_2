@@ -5,6 +5,7 @@
 #include <DX3D/Graphics/RenderSystem.h>
 #include <DX3D/Graphics/CommandManager.h>
 #include <DX3D/Graphics/SwapChain.h>
+#include <DX3D/Graphics/DescriptorHeap.h>
 //#include <DX3D/Graphics/DeviceContext.h>
 //#include <DX3D/Graphics/SwapChain.h>
 //#include <DX3D/Graphics/VertexBuffer.h>

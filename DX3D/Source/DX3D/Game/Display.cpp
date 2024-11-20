@@ -6,9 +6,7 @@
 
 Display::Display(HINSTANCE hInstance, Game* game) :Window(hInstance), p_game(game)
 {
-	//auto size = getClientSize();
 	p_swapChain = game->getGraphicsEngine()->getRenderSystem()->createSwapChain(p_hWnd, p_clientWidth, p_clientHeight);
-	//p_swapChain = game->getGraphicsEngine()->getRenderSystem()->createSwapChain4xMsaa(p_hWnd, p_clientWidth, p_clientHeight);
 }
 
 Display::~Display()

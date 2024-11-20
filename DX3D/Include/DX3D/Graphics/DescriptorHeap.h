@@ -19,6 +19,7 @@ private:
 
 	UINT p_rtvDescriptorSize = 0;
 	UINT p_dsvDescriptorSize = 0;
+	UINT p_cbvSrvUavDescriptorSize = 0;
 
 	friend class SwapChain;
 	friend class CommandManager;

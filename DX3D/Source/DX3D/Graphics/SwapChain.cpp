@@ -8,7 +8,7 @@
 
 SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system) :p_system(system)
 {
-	//p_swapChain.Reset();
+	p_swapChain.Reset();
 
 	p_swapChainBufferCount = p_system->p_swapChainBufferCount;
 	p_swapChainBuffer.resize(p_swapChainBufferCount);
@@ -51,6 +51,8 @@ void SwapChain::resize(unsigned int width, unsigned int height)
 {
 	auto& commandMgr = p_system->p_commandMgr;
 
+	commandMgr->flushCommandQueue();
+
 	HRESULT hr = commandMgr->p_commandList->Reset(commandMgr->p_directCmdListAlloc.Get(), nullptr);
 	if (FAILED(hr))
 		DX3DError("SwapChain not created successfully.");
@@ -62,26 +64,15 @@ void SwapChain::resize(unsigned int width, unsigned int height)
 	hr = p_swapChain->ResizeBuffers(p_swapChainBufferCount, width, height, p_system->p_backBufferFormat, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
 	if (FAILED(hr))
 		DX3DError("SwapChain not created successfully.");
-	
-	p_currBackBuffer = 0;
-
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(p_system->p_descriptorHeap->p_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-	for (int i = 0; i < p_swapChainBufferCount; i++)
-	{
-		hr = p_swapChain->GetBuffer(i, IID_PPV_ARGS(&p_swapChainBuffer[i]));
-		if (FAILED(hr))
-			DX3DError("SwapChain not created successfully.");
-
-		p_system->p_d3dDevice->CreateRenderTargetView(p_swapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
-		rtvHeapHandle.Offset(1, p_system->p_descriptorHeap->p_rtvDescriptorSize);
-	}
 
 	reloadBuffers(width, height);
 }
 
 void SwapChain::present(bool vsync)
 {
-	p_swapChain->Present(vsync, NULL);
+	HRESULT hr = p_swapChain->Present(vsync, NULL);
+	if (FAILED(hr))
+		DX3DError("SwapChain::present error.");
 
 	p_currBackBuffer = (p_currBackBuffer + 1) % p_swapChainBufferCount;
 
@@ -90,9 +81,25 @@ void SwapChain::present(bool vsync)
 
 void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 {
-	p_system->p_commandMgr->flushCommandQueue();
+	auto& commandMgr = p_system->p_commandMgr;
 
 	auto& device = p_system->p_d3dDevice;
+
+	p_currBackBuffer = 0;
+
+	HRESULT hr = S_OK;
+
+	auto& descriptorHeap = p_system->p_descriptorHeap;
+	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHeapHandle(descriptorHeap->p_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+	for (int i = 0; i < p_swapChainBufferCount; i++)
+	{
+		hr = p_swapChain->GetBuffer(i, IID_PPV_ARGS(&p_swapChainBuffer[i]));
+		if (FAILED(hr))
+			DX3DError("SwapChain not created successfully.");
+
+		p_system->p_d3dDevice->CreateRenderTargetView(p_swapChainBuffer[i].Get(), nullptr, rtvHeapHandle);
+		rtvHeapHandle.Offset(1, descriptorHeap->p_rtvDescriptorSize);
+	}
 
 	D3D12_RESOURCE_DESC depthStencilDesc{};
 	depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -113,7 +120,7 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	optClear.DepthStencil.Stencil = 0;
 
 	auto heapProps = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	HRESULT hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc,
+	hr = device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &depthStencilDesc,
 		D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(p_depthStencilBuffer.GetAddressOf()));
 	if (FAILED(hr))
 		DX3DError("SwapChain not created successfully.");
@@ -124,19 +131,19 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	dsvDesc.Format = p_system->p_depthStencilFormat;
 	dsvDesc.Texture2D.MipSlice = 0;
 	
-	device->CreateDepthStencilView(p_depthStencilBuffer.Get(), &dsvDesc, p_system->p_descriptorHeap->depthStencilView());
+	device->CreateDepthStencilView(p_depthStencilBuffer.Get(), &dsvDesc, descriptorHeap->depthStencilView());
 
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(p_depthStencilBuffer.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-	p_system->p_commandMgr->p_commandList->ResourceBarrier(1, &barrier);
+	commandMgr->p_commandList->ResourceBarrier(1, &barrier);
 	
-	hr = p_system->p_commandMgr->p_commandList->Close();
+	hr = commandMgr->p_commandList->Close();
 	if (FAILED(hr))
 		DX3DError("SwapChain not created successfully.");
 
-	ID3D12CommandList* cmdsLists[] = { p_system->p_commandMgr->p_commandList.Get() };
-	p_system->p_commandMgr->p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	ID3D12CommandList* cmdsLists[] = { commandMgr->p_commandList.Get() };
+	commandMgr->p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
 
-	p_system->p_commandMgr->flushCommandQueue();
+	commandMgr->flushCommandQueue();
 
 	p_screenViewport.TopLeftX = 0;
 	p_screenViewport.TopLeftY = 0;

@@ -51,8 +51,6 @@ RenderSystem::RenderSystem()
             DX3DError("RenderSystem not created successfully.");
     }
 
-    p_cbvSrvUavDescriptorSize = p_d3dDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-
     //Check 4xmsaa quality
     D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels{};
     msQualityLevels.Format = p_backBufferFormat;
@@ -73,18 +71,12 @@ RenderSystem::RenderSystem()
     p_commandMgr = std::make_shared <CommandManager>(this);
 
     p_descriptorHeap = std::make_shared <DescriptorHeap>(this);
-
-
-
-
-
-
-
-    
 }
 
 RenderSystem::~RenderSystem()
 {
+    if (p_d3dDevice != nullptr)
+        p_commandMgr->flushCommandQueue();
 }
 
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
@@ -216,7 +208,7 @@ void RenderSystem::logAdapterOutputs(IDXGIAdapter* adapter)
         text += L"\n";
         OutputDebugString(text.c_str());
 
-        logOutputDisplayModes(output, p_backBufferFormat);
+        //logOutputDisplayModes(output, p_backBufferFormat);
 
         output->Release();
         output = nullptr;

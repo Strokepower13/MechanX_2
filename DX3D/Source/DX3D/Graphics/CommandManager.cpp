@@ -28,7 +28,9 @@ CommandManager::CommandManager(RenderSystem* system) : p_system(system)
 	if (FAILED(hr))
 		DX3DError("CommandManager not created successfully.");
 
-	p_commandList->Close();
+	hr = p_commandList->Close();
+	if (FAILED(hr))
+		DX3DError("CommandManager not created successfully.");
 }
 
 CommandManager::~CommandManager()
@@ -37,8 +39,13 @@ CommandManager::~CommandManager()
 
 void CommandManager::reset()
 {
-	p_directCmdListAlloc->Reset();
-	p_commandList->Reset(p_directCmdListAlloc.Get(), nullptr);
+	HRESULT hr = p_directCmdListAlloc->Reset();
+	if (FAILED(hr))
+		DX3DError("CommandManager::reset error.");
+
+	hr = p_commandList->Reset(p_directCmdListAlloc.Get(), nullptr);
+	if (FAILED(hr))
+		DX3DError("CommandManager::reset error.");
 }
 
 void CommandManager::setViewportSize(const SwapChainPtr& swapChain)
@@ -59,6 +66,16 @@ void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, float
 	p_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
 }
 
+void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, DirectX::XMVECTORF32 color)
+{
+	auto rtv = p_system->p_descriptorHeap->currentBackBufferView(swapChain);
+	auto dsv = p_system->p_descriptorHeap->depthStencilView();
+
+	p_commandList->ClearRenderTargetView(rtv, color, 0, nullptr);
+	p_commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
+	p_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
+}
+
 void CommandManager::begin(const SwapChainPtr& swapChain)
 {
 	this->reset();
@@ -71,7 +88,9 @@ void CommandManager::finish(const SwapChainPtr& swapChain)
 	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 	p_commandList->ResourceBarrier(1, &barrier);
 
-	p_commandList->Close();
+	HRESULT hr = p_commandList->Close();
+	if (FAILED(hr))
+		DX3DError("CommandManager::finish error.");
 
 	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
 	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
@@ -82,7 +101,7 @@ void CommandManager::flushCommandQueue()
 	p_currentFence++;
 	HRESULT hr = p_commandQueue->Signal(p_fence.Get(), p_currentFence);
 	if (FAILED(hr))
-		DX3DError("flushCommandQueue error.");
+		DX3DError("CommandManager::flushCommandQueue error.");
 
 	if (p_fence->GetCompletedValue() < p_currentFence)
 	{
@@ -90,7 +109,7 @@ void CommandManager::flushCommandQueue()
 
 		hr = p_fence->SetEventOnCompletion(p_currentFence, eventHandle);
 		if (FAILED(hr))
-			DX3DError("flushCommandQueue error.");
+			DX3DError("CommandManager::flushCommandQueue error.");
 
 		if(eventHandle)
 		{
