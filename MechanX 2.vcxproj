@@ -113,7 +113,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>D3D12.lib;d3dcompiler.lib;dxgi.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>D3D12.lib;d3dcompiler.lib;dxgi.lib;dxguid.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -136,6 +136,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\ConstantBuffer.cpp" />
+    <ClCompile Include="Game\BoxApp.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\DescriptorHeap.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\CommandManager.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Game\Display.cpp" />
@@ -148,8 +150,19 @@
     <ClCompile Include="DX3D\Source\DX3D\Graphics\RenderSystem.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\SwapChain.cpp" />
     <ClCompile Include="Game\InitD3D.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\RootSignature.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\VertexShader.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\PixelShader.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\VertexBuffer.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\IndexBuffer.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\PipelineState.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\InputLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\ConstantBuffer.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Utilities\ReadData.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Utilities\UploadBuffer.h" />
+    <ClInclude Include="Game\BoxApp.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\DescriptorHeap.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\CommandManager.h" />
     <ClInclude Include="DX3D\Include\DX3D\Game\Display.h" />
@@ -163,13 +176,40 @@
     <ClInclude Include="DX3D\Include\DX3D\Graphics\RenderSystem.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\SwapChain.h" />
     <ClInclude Include="Game\InitD3D.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\PixelShader.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\IndexBuffer.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\PipelineState.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\InputLayout.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\RootSignature.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexShader.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\Logo\MechanXLogo.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Assets\Shaders\ColorPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Projects\MechanX 2\Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Assets\Shaders\ColorVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VS</EntryPointName>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Projects\MechanX 2\Assets\Shaders\%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

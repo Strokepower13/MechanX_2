@@ -1,4 +1,4 @@
-#include "InitD3D.h"
+#include "BoxApp.h"
 
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 614; }
 
@@ -12,7 +12,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	
 	try
 	{
-		InitD3D game(hInstance);
+		BoxApp game(hInstance);
 		game.run();
 	}
 	catch (...)

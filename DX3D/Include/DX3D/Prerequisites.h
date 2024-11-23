@@ -6,9 +6,12 @@
 class SwapChain;
 class CommandManager;
 class DescriptorHeap;
+class RootSignature;
 class VertexBuffer;
 class IndexBuffer;
 class ConstantBuffer;
+class InputLayout;
+class PipelineState;
 class VertexShader;
 class GeometryShader;
 class PixelShader;
@@ -35,6 +38,9 @@ typedef std::shared_ptr <DescriptorHeap> DescriptorHeapPtr;
 typedef std::shared_ptr <VertexBuffer> VertexBufferPtr;
 typedef std::shared_ptr <IndexBuffer> IndexBufferPtr;
 typedef std::shared_ptr <ConstantBuffer> ConstantBufferPtr;
+typedef std::shared_ptr <RootSignature> RootSignaturePtr;
+typedef std::shared_ptr <InputLayout> InputLayoutPtr;
+typedef std::shared_ptr <PipelineState> PipelineStatePtr;
 typedef std::shared_ptr <VertexShader> VertexShaderPtr;
 typedef std::shared_ptr <GeometryShader> GeometryShaderPtr;
 typedef std::shared_ptr <PixelShader> PixelShaderPtr;
@@ -44,6 +50,11 @@ typedef std::shared_ptr <Texture2DArray> Texture2DArrayPtr;
 typedef std::shared_ptr <RasterizerState> RasterizerStatePtr;
 typedef std::shared_ptr <BlendState> BlendStatePtr;
 typedef std::shared_ptr <DepthStencilState> DepthStencilStatePtr;
+
+enum class InputLayoutType
+{
+	PosColor = 0
+};
 
 enum class CullMode
 {

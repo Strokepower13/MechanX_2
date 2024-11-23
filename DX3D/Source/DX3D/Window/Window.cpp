@@ -127,6 +127,11 @@ int Window::getClientHeight() const
 	return p_clientHeight;
 }
 
+float Window::getAspectRatio() const
+{
+	return static_cast<float>(p_clientWidth) / p_clientHeight;
+}
+
 void Window::setClientWidth(int width)
 {
 	p_clientWidth = width;

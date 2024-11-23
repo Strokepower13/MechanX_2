@@ -11,11 +11,27 @@ public:
 	~CommandManager();
 
 public:
+	void resetCmdList();
+	void closeCmdList();
+
 	void setViewportSize(const SwapChainPtr& swapChain);
 	void clearRenderTargetColor(const SwapChainPtr& swapChain, float red, float green, float blue, float alpha);
 	void clearRenderTargetColor(const SwapChainPtr& swapChain, DirectX::XMVECTORF32 color);
+
 	void begin(const SwapChainPtr& swapChain);
 	void finish(const SwapChainPtr& swapChain);
+
+	void setPSO(const PipelineStatePtr& PSO);
+
+	void setDescriptorHeaps();
+	void setRootSignature();
+
+	void setVertexBuffer(const VertexBufferPtr& vertexBuffer);
+	void setIndexBuffer(const IndexBufferPtr& indexBuffer);
+
+	void setDescriptorTable();
+
+	void drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex);
 
 protected:
 	void reset();
@@ -30,7 +46,11 @@ private:
 	Microsoft::WRL::ComPtr<ID3D12Fence> p_fence;
 	UINT64 p_currentFence = 0;
 
+	Microsoft::WRL::ComPtr<ID3D12PipelineState> p_PSO = nullptr;
+
 	friend class SwapChain;
 	friend class RenderSystem;
+	friend class VertexBuffer;
+	friend class IndexBuffer;
 };
 

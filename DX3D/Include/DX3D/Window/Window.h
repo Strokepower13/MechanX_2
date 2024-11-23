@@ -11,6 +11,7 @@ public:
 	HWND getHwnd() const;
 	int getClientWidth() const;
 	int getClientHeight() const;
+	float getAspectRatio() const;
 	void setClientWidth(int width);
 	void setClientHeight(int height);
 

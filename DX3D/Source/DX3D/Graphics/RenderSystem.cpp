@@ -2,13 +2,14 @@
 #include <DX3D/Graphics/SwapChain.h>
 #include <DX3D/Graphics/CommandManager.h>
 #include <DX3D/Graphics/DescriptorHeap.h>
-//#include <DX3D/Graphics/DeviceContext.h>
-//#include <DX3D/Graphics/VertexBuffer.h>
-//#include <DX3D/Graphics/IndexBuffer.h>
-//#include <DX3D/Graphics/ConstantBuffer.h>
-//#include <DX3D/Graphics/VertexShader.h>
+#include <DX3D/Graphics/VertexBuffer.h>
+#include <DX3D/Graphics/IndexBuffer.h>
+#include <DX3D/Graphics/ConstantBuffer.h>
+#include <DX3D/Graphics/RootSignature.h>
+#include <DX3D/Graphics/PipelineState.h>
+#include <DX3D/Graphics/VertexShader.h>
 //#include <DX3D/Graphics/GeometryShader.h>
-//#include <DX3D/Graphics/PixelShader.h>
+#include <DX3D/Graphics/PixelShader.h>
 //#include <DX3D/Resources/Texture.h>
 //#include <DX3D/Resources/Texture2DArray.h>
 //#include <DX3D/States/RasterizerState.h>
@@ -71,6 +72,8 @@ RenderSystem::RenderSystem()
     p_commandMgr = std::make_shared <CommandManager>(this);
 
     p_descriptorHeap = std::make_shared <DescriptorHeap>(this);
+
+    p_rootSignature = std::make_shared <RootSignature>(this);
 }
 
 RenderSystem::~RenderSystem()
@@ -94,40 +97,40 @@ CommandManagerPtr RenderSystem::getCommandMgr()
     return this->p_commandMgr;
 }
 
-//DeviceContextPtr RenderSystem::getImmediateDeviceContext()
-//{
-//    return this->p_immDeviceContext;
-//}
-//
-//VertexBufferPtr RenderSystem::createVertexBuffer(void* listVertices, UINT sizeVertex, UINT sizeList)
-//{
-//    return std::make_shared<VertexBuffer>(listVertices, sizeVertex, sizeList, this);
-//}
-//
-//IndexBufferPtr RenderSystem::createIndexBuffer(void* listIndexes, UINT sizeList)
-//{
-//    return std::make_shared<IndexBuffer>(listIndexes, sizeList, this);
-//}
-//
-//ConstantBufferPtr RenderSystem::createConstantBuffer(void* buffer, UINT sizeBuffer)
-//{
-//    return std::make_shared<ConstantBuffer>(buffer, sizeBuffer, this);
-//}
-//
-//VertexShaderPtr RenderSystem::createVertexShader(const wchar_t* fullPath, const char* entryPoint)
-//{
-//    return std::make_shared<VertexShader>(fullPath, entryPoint, this);
-//}
-//
+VertexBufferPtr RenderSystem::createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList)
+{
+    return std::make_shared<VertexBuffer>(data, sizeVertex, sizeList, this);
+}
+
+IndexBufferPtr RenderSystem::createIndexBuffer(const void* data, UINT sizeVertex, UINT sizeList)
+{
+    return std::make_shared<IndexBuffer>(data, sizeVertex, sizeList, this);
+}
+
+ConstantBufferPtr RenderSystem::createConstantBuffer(UINT sizeData, UINT elementCount)
+{
+    return std::make_shared<ConstantBuffer>(sizeData, elementCount, this);
+}
+
+PipelineStatePtr RenderSystem::createPipelineState(const InputLayoutPtr& inputLayout, const VertexShaderPtr& vs, const PixelShaderPtr& ps)
+{
+    return std::make_shared<PipelineState>(inputLayout, vs, ps, this);
+}
+
+VertexShaderPtr RenderSystem::createVertexShader(const wchar_t* fullPath)
+{
+    return std::make_shared<VertexShader>(fullPath);
+}
+
 //GeometryShaderPtr RenderSystem::createGeometryShader(const wchar_t* fullPath, const char* entryPoint)
 //{
 //    return std::make_shared<GeometryShader>(fullPath, entryPoint, this);
 //}
-//
-//PixelShaderPtr RenderSystem::createPixelShader(const wchar_t* fullPath, const char* entryPoint)
-//{
-//    return std::make_shared<PixelShader>(fullPath, entryPoint, this);
-//}
+
+PixelShaderPtr RenderSystem::createPixelShader(const wchar_t* fullPath)
+{
+    return std::make_shared<PixelShader>(fullPath);
+}
 //
 //TexturePtr RenderSystem::createTexture(const wchar_t* fullPath)
 //{

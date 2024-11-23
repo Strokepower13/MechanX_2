@@ -25,14 +25,14 @@ public:
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
 	//SwapChainPtr createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height);
 	CommandManagerPtr getCommandMgr();
-	//DeviceContextPtr getImmediateDeviceContext();
 
-	//VertexBufferPtr createVertexBuffer(void* listVertices, UINT sizeVertex, UINT sizeList);
-	//IndexBufferPtr createIndexBuffer(void* listIndexes, UINT sizeList);
-	//ConstantBufferPtr createConstantBuffer(void* buffer, UINT sizeBuffer);
-	//VertexShaderPtr createVertexShader(const wchar_t* fullPath, const char* entryPoint);
+	VertexBufferPtr createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList);
+	IndexBufferPtr createIndexBuffer(const void* data, UINT sizeVertex, UINT sizeList);
+	ConstantBufferPtr createConstantBuffer(UINT sizeData, UINT elementCount);
+	PipelineStatePtr createPipelineState(const InputLayoutPtr& inputLayout, const VertexShaderPtr& vs, const PixelShaderPtr& ps);
+	VertexShaderPtr createVertexShader(const wchar_t* fullPath);
 	//GeometryShaderPtr createGeometryShader(const wchar_t* fullPath, const char* entryPoint);
-	//PixelShaderPtr createPixelShader(const wchar_t* fullPath, const char* entryPoint);
+	PixelShaderPtr createPixelShader(const wchar_t* fullPath);
 	//TexturePtr createTexture(const wchar_t* fullPath);
 	//Texture2DArrayPtr createTexture2DArray(std::vector<std::wstring>& filenames);
 
@@ -63,19 +63,13 @@ private:
 
 	CommandManagerPtr p_commandMgr;
 	DescriptorHeapPtr p_descriptorHeap;
-
-	
-	//Microsoft::WRL::ComPtr<ID3D11Device> p_d3dDevice;
-	//Microsoft::WRL::ComPtr<IDXGIDevice> p_dxgiDevice;
-	//Microsoft::WRL::ComPtr<IDXGIAdapter> p_dxgiAdapter;
-	//Microsoft::WRL::ComPtr<IDXGIFactory> p_dxgiFactorty;
-
-	//Microsoft::WRL::ComPtr<ID3D11DeviceContext> p_d3dImmediateContext;
-	//DeviceContextPtr p_immDeviceContext;
+	RootSignaturePtr p_rootSignature;
 
 	friend class SwapChain;
 	friend class CommandManager;
 	friend class DescriptorHeap;
+	friend class RootSignature;
+	friend class PipelineState;
 	friend class VertexBuffer;
 	friend class IndexBuffer;
 	friend class ConstantBuffer;

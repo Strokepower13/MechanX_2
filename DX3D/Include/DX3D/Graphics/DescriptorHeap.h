@@ -16,6 +16,7 @@ private:
 	RenderSystem* p_system = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> p_rtvHeap;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> p_dsvHeap;
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> p_cbvHeap;
 
 	UINT p_rtvDescriptorSize = 0;
 	UINT p_dsvDescriptorSize = 0;
@@ -23,5 +24,6 @@ private:
 
 	friend class SwapChain;
 	friend class CommandManager;
+	friend class ConstantBuffer;
 };
 

@@ -2,6 +2,10 @@
 #include <DX3D/Graphics/SwapChain.h>
 #include <DX3D/Graphics/RenderSystem.h>
 #include <DX3D/Graphics/DescriptorHeap.h>
+#include <DX3D/Graphics/RootSignature.h>
+#include <DX3D/Graphics/PipelineState.h>
+#include <DX3D/Graphics/VertexBuffer.h>
+#include <DX3D/Graphics/IndexBuffer.h>
 #include <d3dx12.h>
 
 CommandManager::CommandManager(RenderSystem* system) : p_system(system)
@@ -43,9 +47,28 @@ void CommandManager::reset()
 	if (FAILED(hr))
 		DX3DError("CommandManager::reset error.");
 
-	hr = p_commandList->Reset(p_directCmdListAlloc.Get(), nullptr);
+	hr = p_commandList->Reset(p_directCmdListAlloc.Get(), p_PSO.Get());
 	if (FAILED(hr))
 		DX3DError("CommandManager::reset error.");
+}
+
+void CommandManager::resetCmdList()
+{
+	HRESULT hr = p_commandList->Reset(p_directCmdListAlloc.Get(), nullptr);
+	if (FAILED(hr))
+		DX3DError("CommandManager::resetCmdList error.");
+}
+
+void CommandManager::closeCmdList()
+{
+	HRESULT hr = p_commandList->Close();
+	if (FAILED(hr))
+		DX3DError("CommandManager::closeCmdList error.");
+
+	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
+	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+
+	this->flushCommandQueue();
 }
 
 void CommandManager::setViewportSize(const SwapChainPtr& swapChain)
@@ -94,6 +117,45 @@ void CommandManager::finish(const SwapChainPtr& swapChain)
 
 	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
 	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+}
+
+void CommandManager::setPSO(const PipelineStatePtr& PSO)
+{
+	this->p_PSO = PSO->p_PSO;
+}
+
+void CommandManager::setDescriptorHeaps()
+{
+	ID3D12DescriptorHeap* descriptorHeaps[] = { p_system->p_descriptorHeap->p_cbvHeap.Get() };
+	p_commandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+}
+
+void CommandManager::setRootSignature()
+{
+	p_commandList->SetGraphicsRootSignature(p_system->p_rootSignature->p_rootSignature.Get());
+}
+
+void CommandManager::setVertexBuffer(const VertexBufferPtr& vertexBuffer)
+{
+	auto vbv = vertexBuffer->getVBV();
+	p_commandList->IASetVertexBuffers(0, 1, &vbv);
+}
+
+void CommandManager::setIndexBuffer(const IndexBufferPtr& indexBuffer)
+{
+	auto ibv = indexBuffer->getIBV();
+	p_commandList->IASetIndexBuffer(&ibv);
+}
+
+void CommandManager::setDescriptorTable()
+{
+	p_commandList->SetGraphicsRootDescriptorTable(0, p_system->p_descriptorHeap->p_cbvHeap->GetGPUDescriptorHandleForHeapStart());
+}
+
+void CommandManager::drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex)
+{
+	p_commandList->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	p_commandList->DrawIndexedInstanced(indexCount, 1, startIndexLocation, startVertexIndex, 0);
 }
 
 void CommandManager::flushCommandQueue()
