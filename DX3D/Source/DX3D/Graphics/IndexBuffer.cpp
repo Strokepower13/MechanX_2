@@ -10,7 +10,7 @@ IndexBuffer::IndexBuffer(const void* data, UINT sizeVertex, UINT sizeList, Rende
 	
 	auto& device = p_system->p_d3dDevice;
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-	auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeVertex * sizeList);
+	auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(static_cast<UINT64>(sizeVertex) * sizeList);
 
 	HRESULT hr = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
 		&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(p_buffer.GetAddressOf()));
@@ -26,7 +26,7 @@ IndexBuffer::IndexBuffer(const void* data, UINT sizeVertex, UINT sizeList, Rende
 
 	D3D12_SUBRESOURCE_DATA subResourceData{};
 	subResourceData.pData = data;
-	subResourceData.RowPitch = sizeVertex * sizeList;
+	subResourceData.RowPitch = static_cast<LONG_PTR>(sizeVertex) * sizeList;
 	subResourceData.SlicePitch = subResourceData.RowPitch;
 
 	auto& cmdList = p_system->p_commandMgr->p_commandList;

@@ -15,6 +15,7 @@
 //#include <DX3D/States/RasterizerState.h>
 //#include <DX3D/States/BlendState.h>
 //#include <DX3D/States/DepthStencilState.h>
+#include <DX3D/Graphics/MSAAResources.h>
 
 #include <d3dcompiler.h>
 #include <exception>
@@ -35,7 +36,7 @@ RenderSystem::RenderSystem()
     }
 #endif
 
-    hr = CreateDXGIFactory1(IID_PPV_ARGS(&p_dxgiFactory));
+    hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&p_dxgiFactory));
     if (FAILED(hr))
         DX3DError("RenderSystem not created successfully.");
 
@@ -84,7 +85,8 @@ RenderSystem::~RenderSystem()
 
 SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 {
-    return std::make_shared <SwapChain>(hwnd, width, height, this);
+    p_swapChain = std::make_shared <SwapChain>(hwnd, width, height, this);
+    return p_swapChain;
 }
 
 //SwapChainPtr RenderSystem::createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height)
@@ -167,6 +169,23 @@ PixelShaderPtr RenderSystem::createPixelShader(const wchar_t* fullPath)
 //{
 //    return std::make_shared<DepthStencilState>(dsMode, this);
 //}
+
+MSAAResourcesPtr RenderSystem::createMSAAResources(UINT width, UINT height)
+{
+    p_msaaRes = std::make_shared<MSAAResources>(width, height, this);
+    return p_msaaRes;
+}
+
+void RenderSystem::setMSAAState(bool state)
+{
+    if (p_4xMsaaState != state)
+        p_4xMsaaState = state;
+}
+
+bool RenderSystem::getMSAAState()
+{
+    return p_4xMsaaState;
+}
 
 void RenderSystem::logAdapters()
 {

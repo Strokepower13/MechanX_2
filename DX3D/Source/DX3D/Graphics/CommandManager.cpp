@@ -8,6 +8,8 @@
 #include <DX3D/Graphics/IndexBuffer.h>
 #include <d3dx12.h>
 
+#include <DX3D/Graphics/MSAAResources.h>
+
 CommandManager::CommandManager(RenderSystem* system) : p_system(system)
 {
 	D3D12_COMMAND_QUEUE_DESC queueDesc = {};
@@ -71,45 +73,101 @@ void CommandManager::closeCmdList()
 	this->flushCommandQueue();
 }
 
-void CommandManager::setViewportSize(const SwapChainPtr& swapChain)
+void CommandManager::setViewportSize()
 {
-	p_commandList->RSSetViewports(1, &swapChain->p_screenViewport);
-	p_commandList->RSSetScissorRects(1, &swapChain->p_scissorRect);
+	auto& sc = p_system->p_swapChain;
+	p_commandList->RSSetViewports(1, &sc->p_screenViewport);
+	p_commandList->RSSetScissorRects(1, &sc->p_scissorRect);
 }
 
-void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, float red, float green, float blue, float alpha)
+void CommandManager::clearRenderTargetColor(float red, float green, float blue, float alpha)
 {
 	FLOAT clearColor[] = { red,green,blue,alpha };
 
-	auto rtv = p_system->p_descriptorHeap->currentBackBufferView(swapChain);
-	auto dsv = p_system->p_descriptorHeap->depthStencilView();
+	D3D12_CPU_DESCRIPTOR_HANDLE  rtv{};
+	D3D12_CPU_DESCRIPTOR_HANDLE  dsv{};
+
+	if (p_system->p_4xMsaaState)
+	{
+		auto& msaaRes = p_system->p_msaaRes;
+		rtv = msaaRes->p_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		dsv = msaaRes->p_DSVDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	}
+	else
+	{
+		auto& descriptorHeap = p_system->p_descriptorHeap;
+		rtv = descriptorHeap->currentBackBufferView(p_system->p_swapChain);
+		dsv = descriptorHeap->depthStencilView();
+	}
 
 	p_commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
 	p_commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	p_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
 }
 
-void CommandManager::clearRenderTargetColor(const SwapChainPtr& swapChain, DirectX::XMVECTORF32 color)
+void CommandManager::clearRenderTargetColor(DirectX::XMVECTORF32 color)
 {
-	auto rtv = p_system->p_descriptorHeap->currentBackBufferView(swapChain);
-	auto dsv = p_system->p_descriptorHeap->depthStencilView();
+	D3D12_CPU_DESCRIPTOR_HANDLE  rtv{};
+	D3D12_CPU_DESCRIPTOR_HANDLE  dsv{};
+
+	if (p_system->p_4xMsaaState)
+	{
+		auto& msaaRes = p_system->p_msaaRes;
+		rtv = msaaRes->p_RTVDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+		dsv = msaaRes->p_DSVDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	}
+	else
+	{
+		auto& descriptorHeap = p_system->p_descriptorHeap;
+		rtv = descriptorHeap->currentBackBufferView(p_system->p_swapChain);
+		dsv = descriptorHeap->depthStencilView();
+	}
 
 	p_commandList->ClearRenderTargetView(rtv, color, 0, nullptr);
 	p_commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 	p_commandList->OMSetRenderTargets(1, &rtv, true, &dsv);
 }
 
-void CommandManager::begin(const SwapChainPtr& swapChain)
+void CommandManager::begin()
 {
 	this->reset();
-	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-	p_commandList->ResourceBarrier(1, &barrier);
+
+	if (p_system->p_4xMsaaState)
+	{
+		auto& msaaRes = p_system->p_msaaRes;
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(msaaRes->p_renderTarget.Get(), D3D12_RESOURCE_STATE_RESOLVE_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
+
+	else
+	{
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(p_system->p_swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
 }
 
-void CommandManager::finish(const SwapChainPtr& swapChain)
+void CommandManager::finish()
 {
-	auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-	p_commandList->ResourceBarrier(1, &barrier);
+	auto backBuffer = p_system->p_swapChain->currentBackBuffer();
+	if (p_system->p_4xMsaaState)
+	{
+		auto& msaaRes = p_system->p_msaaRes;
+		D3D12_RESOURCE_BARRIER  barriers[2] = {
+			CD3DX12_RESOURCE_BARRIER::Transition(msaaRes->p_renderTarget.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_RESOLVE_SOURCE),
+			CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RESOLVE_DEST)
+		};
+		p_commandList->ResourceBarrier(2, barriers);
+		p_commandList->ResolveSubresource(backBuffer, 0, msaaRes->p_renderTarget.Get(), 0, p_system->p_backBufferFormat);
+
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_RESOLVE_DEST, D3D12_RESOURCE_STATE_PRESENT);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
+	else
+	{
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(backBuffer, D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
+
 
 	HRESULT hr = p_commandList->Close();
 	if (FAILED(hr))

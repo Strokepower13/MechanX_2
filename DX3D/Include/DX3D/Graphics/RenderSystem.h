@@ -44,6 +44,10 @@ public:
 	//BlendStatePtr createBlendState(const BlendMode& blendMode);
 	//DepthStencilStatePtr createDepthStencilState(const DepthStencilMode& dsMode);
 
+	MSAAResourcesPtr createMSAAResources(UINT width, UINT height);
+	void setMSAAState(bool state);
+	bool getMSAAState();
+
 private:
 	void logAdapters();
 	void logAdapterOutputs(IDXGIAdapter* adapter);
@@ -65,6 +69,9 @@ private:
 	DescriptorHeapPtr p_descriptorHeap;
 	RootSignaturePtr p_rootSignature;
 
+	SwapChainPtr p_swapChain = nullptr;
+	MSAAResourcesPtr p_msaaRes = nullptr;
+
 	friend class SwapChain;
 	friend class CommandManager;
 	friend class DescriptorHeap;
@@ -81,5 +88,6 @@ private:
 	friend class RasterizerState;
 	friend class BlendState;
 	friend class DepthStencilState;
+	friend class MSAAResources;
 };
 

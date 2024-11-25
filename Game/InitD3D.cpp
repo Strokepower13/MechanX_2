@@ -37,11 +37,11 @@ void InitD3D::onUpdate(float deltaTime)
 
 	VertexShaderPtr pop = getGraphicsEngine()->getRenderSystem()->createVertexShader(L"Assets/Shaders/Color.cso");
 	
-	commMgr->begin(scptr);
-	commMgr->setViewportSize(scptr);
+	commMgr->begin();
+	commMgr->setViewportSize();
 	//commMgr->clearRenderTargetColor(scptr, 0.5f, 0.0f, 0.0f, 1.0f);
-	commMgr->clearRenderTargetColor(scptr, DirectX::Colors::LightBlue);
-	commMgr->finish(scptr);
+	commMgr->clearRenderTargetColor(DirectX::Colors::LightBlue);
+	commMgr->finish();
 
 	scptr->present(true);
 }

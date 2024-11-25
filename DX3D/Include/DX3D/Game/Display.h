@@ -9,11 +9,12 @@ public:
 	~Display();
 	SwapChainPtr getSwapChain();
 
-protected:
+public:
 	virtual void onSize();
 
 private:
 	SwapChainPtr p_swapChain;
+	MSAAResourcesPtr p_msaaRes;
 	Game* p_game = nullptr;
 
 	friend class GraphicsEngine;

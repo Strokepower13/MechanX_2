@@ -78,6 +78,9 @@ void BoxApp::onCreate()
 
 	ObjectConstants cb{};
 
+	auto width = getDisplay()->getClientWidth();
+	auto height = getDisplay()->getClientHeight();
+
 	p_cb = rs->createConstantBuffer(sizeof(ObjectConstants), 1);
 
 	p_pso = rs->createPipelineState(p_inputLayout, p_vs, p_ps);
@@ -95,6 +98,7 @@ void BoxApp::onUpdate(float deltaTime)
 
 	int width = getDisplay()->getClientWidth();
 	int height = getDisplay()->getClientHeight();
+
 	
 	if (getInputSystem()->isLButton())
 	{
@@ -114,6 +118,23 @@ void BoxApp::onUpdate(float deltaTime)
 
 		p_radius += dx - dy;
 		p_radius = max(3.0f, min(p_radius, 15.0f));
+	}
+
+	if (GetAsyncKeyState('Y') & 0x8000)
+	{
+		getGraphicsEngine()->getRenderSystem()->setMSAAState(true);
+		p_pso.reset();
+		p_pso = getGraphicsEngine()->getRenderSystem()->createPipelineState(p_inputLayout, p_vs, p_ps);
+		cmdMgr->setPSO(p_pso);
+		getDisplay()->onSize();
+	}
+
+	if (GetAsyncKeyState('N') & 0x8000)
+	{
+		getGraphicsEngine()->getRenderSystem()->setMSAAState(false);
+		p_pso.reset();
+		p_pso = getGraphicsEngine()->getRenderSystem()->createPipelineState(p_inputLayout, p_vs, p_ps);
+		cmdMgr->setPSO(p_pso);
 	}
 
 	ObjectConstants cb{};
@@ -140,9 +161,9 @@ void BoxApp::onUpdate(float deltaTime)
 	p_cb->update(0, &cb);
 
 	//Begin drawing
-	cmdMgr->begin(scptr);
-	cmdMgr->setViewportSize(scptr);
-	cmdMgr->clearRenderTargetColor(scptr, DirectX::Colors::LightSteelBlue);
+	cmdMgr->begin();
+	cmdMgr->setViewportSize();
+	cmdMgr->clearRenderTargetColor(DirectX::Colors::LightSteelBlue);
 
 	cmdMgr->setDescriptorHeaps();
 	cmdMgr->setRootSignature();
@@ -151,7 +172,7 @@ void BoxApp::onUpdate(float deltaTime)
 	cmdMgr->setIndexBuffer(p_ib);
 	cmdMgr->setDescriptorTable();
 	cmdMgr->drawIndexedTriangleList(36, 0, 0);
-	cmdMgr->finish(scptr);
+	cmdMgr->finish();
 
 	scptr->present(true);
 }

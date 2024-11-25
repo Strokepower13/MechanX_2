@@ -15,7 +15,13 @@ PipelineState::PipelineState(const InputLayoutPtr& inputLayout, const VertexShad
 	psoDesc.pRootSignature = p_system->p_rootSignature->p_rootSignature.Get();
 	psoDesc.VS = { vs->p_blob.data(), vs->p_blob.size() };
 	psoDesc.PS = { ps->p_blob.data(), ps->p_blob.size() };
-	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	CD3DX12_RASTERIZER_DESC rastDesc(D3D12_FILL_MODE_SOLID,
+		D3D12_CULL_MODE_NONE, FALSE,
+		D3D12_DEFAULT_DEPTH_BIAS, D3D12_DEFAULT_DEPTH_BIAS_CLAMP,
+		D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS, TRUE, TRUE, FALSE,
+		0, D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF);
+	//CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	psoDesc.RasterizerState = p_system->p_4xMsaaState ? rastDesc : CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
 	psoDesc.SampleMask = UINT_MAX;

@@ -157,6 +157,7 @@
     <ClCompile Include="DX3D\Source\DX3D\Graphics\IndexBuffer.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\PipelineState.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Graphics\InputLayout.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Graphics\MSAAResources.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Graphics\ConstantBuffer.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="DX3D\Include\DX3D\Graphics\IndexBuffer.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\PipelineState.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\InputLayout.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Graphics\MSAAResources.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\RootSignature.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexShader.h" />

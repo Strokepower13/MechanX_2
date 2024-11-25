@@ -17,13 +17,13 @@ SwapChain::SwapChain(HWND hwnd, UINT width, UINT height, RenderSystem* system) :
 	ZeroMemory(&sd, sizeof(sd));
 	sd.BufferDesc.Width = (width > 1) ? width : 1;
 	sd.BufferDesc.Height = (height > 1) ? height : 1;
-	sd.BufferDesc.RefreshRate.Numerator = 60;
+	sd.BufferDesc.RefreshRate.Numerator = 165;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = p_system->p_backBufferFormat;
 	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	sd.SampleDesc.Count = p_system->p_4xMsaaState ? 4 : 1;
-	sd.SampleDesc.Quality = p_system->p_4xMsaaState ? (p_system->p_4xMsaaQuality - 1) : 0;
+	sd.SampleDesc.Count = 1;
+	sd.SampleDesc.Quality = 0;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = p_swapChainBufferCount;
 	sd.OutputWindow = hwnd;
@@ -109,8 +109,8 @@ void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
 	depthStencilDesc.DepthOrArraySize = 1;
 	depthStencilDesc.MipLevels = 1;
 	depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count = p_system->p_4xMsaaState ? 4 : 1;
-	depthStencilDesc.SampleDesc.Quality = p_system->p_4xMsaaState ? (p_system->p_4xMsaaQuality - 1) : 0;
+	depthStencilDesc.SampleDesc.Count = 1;
+	depthStencilDesc.SampleDesc.Quality = 0;
 	depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 	depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 

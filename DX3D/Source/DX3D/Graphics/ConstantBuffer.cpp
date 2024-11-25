@@ -10,7 +10,7 @@ ConstantBuffer::ConstantBuffer(UINT sizeData, UINT elementCount, RenderSystem* s
 
 	auto& device = p_system->p_d3dDevice;
 	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(p_elementByteSize * elementCount);
+	auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(p_elementByteSize * static_cast<UINT64>(elementCount));
 
 	HRESULT hr = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
 		&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&p_buffer));

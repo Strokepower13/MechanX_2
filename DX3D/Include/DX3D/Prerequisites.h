@@ -20,6 +20,7 @@ class Texture2DArray;
 class Effect;
 class RenderSystem;
 class GraphicsEngine;
+class MSAAResources;
 
 class GameTimer;
 class Window;
@@ -50,6 +51,8 @@ typedef std::shared_ptr <Texture2DArray> Texture2DArrayPtr;
 typedef std::shared_ptr <RasterizerState> RasterizerStatePtr;
 typedef std::shared_ptr <BlendState> BlendStatePtr;
 typedef std::shared_ptr <DepthStencilState> DepthStencilStatePtr;
+
+typedef std::shared_ptr <MSAAResources> MSAAResourcesPtr;
 
 enum class InputLayoutType
 {

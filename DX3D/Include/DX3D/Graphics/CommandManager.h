@@ -14,12 +14,12 @@ public:
 	void resetCmdList();
 	void closeCmdList();
 
-	void setViewportSize(const SwapChainPtr& swapChain);
-	void clearRenderTargetColor(const SwapChainPtr& swapChain, float red, float green, float blue, float alpha);
-	void clearRenderTargetColor(const SwapChainPtr& swapChain, DirectX::XMVECTORF32 color);
+	void setViewportSize();
+	void clearRenderTargetColor(float red, float green, float blue, float alpha);
+	void clearRenderTargetColor(DirectX::XMVECTORF32 color);
 
-	void begin(const SwapChainPtr& swapChain);
-	void finish(const SwapChainPtr& swapChain);
+	void begin();
+	void finish();
 
 	void setPSO(const PipelineStatePtr& PSO);
 

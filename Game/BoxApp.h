@@ -14,6 +14,7 @@ protected:
 	virtual void onUpdate(float deltaTime);
 
 private:
+
 	ConstantBufferPtr p_cb = nullptr;
 	VertexBufferPtr p_vb = nullptr;
 	IndexBufferPtr p_ib = nullptr;
