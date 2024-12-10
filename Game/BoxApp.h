@@ -2,6 +2,7 @@
 #include <DX3D/AllHeaders.h>
 #include <DirectXMath.h>
 #include <DirectXColors.h>
+#include <d3dx12.h>
 
 class BoxApp :public Game
 {
@@ -11,6 +12,7 @@ public:
 
 protected:
 	virtual void onCreate();
+	virtual void onResize();
 	virtual void onUpdate(float deltaTime);
 
 private:

@@ -1,15 +1,15 @@
 #include "BoxApp.h"
 
-struct Vertex
-{
-	DirectX::XMFLOAT3 pos;
-	DirectX::XMFLOAT4 color;
-};
+//struct Vertex
+//{
+//	DirectX::XMFLOAT3 pos;
+//	DirectX::XMFLOAT4 color;
+//};
 
-struct ObjectConstants
-{
-	DirectX::XMFLOAT4X4 worldViewProj;
-};
+//struct ObjectConstants
+//{
+//	DirectX::XMFLOAT4X4 worldViewProj;
+//};
 
 BoxApp::BoxApp(HINSTANCE hInstance) : Game(hInstance)
 {
@@ -32,6 +32,14 @@ void BoxApp::onCreate()
 	p_inputLayout = std::make_shared<InputLayout>(InputLayoutType::PosColor);
 
 	auto rs = getGraphicsEngine()->getRenderSystem();
+
+	CD3DX12_ROOT_PARAMETER slotRootParameter[1]{};
+
+	CD3DX12_DESCRIPTOR_RANGE cbvTable{};
+	cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+	slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
+
+	rs->createRootSignature(slotRootParameter, 1);
 
 	Vertex vertices[8] = {
 		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f), DirectX::XMFLOAT4(DirectX::Colors::White) }),
@@ -90,15 +98,17 @@ void BoxApp::onCreate()
 	commMgr->setPSO(p_pso);
 }
 
+void BoxApp::onResize()
+{
+	auto AR = getDisplay()->getAspectRatio();
+	DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, AR, 1.0f, 1000.0f);
+	DirectX::XMStoreFloat4x4(&p_proj, P);
+}
+
 void BoxApp::onUpdate(float deltaTime)
 {
 	auto scptr = getDisplay()->getSwapChain();
 	auto cmdMgr = getGraphicsEngine()->getRenderSystem()->getCommandMgr();
-	auto AR = getDisplay()->getAspectRatio();
-
-	int width = getDisplay()->getClientWidth();
-	int height = getDisplay()->getClientHeight();
-
 	
 	if (getInputSystem()->isLButton())
 	{
@@ -126,7 +136,7 @@ void BoxApp::onUpdate(float deltaTime)
 		p_pso.reset();
 		p_pso = getGraphicsEngine()->getRenderSystem()->createPipelineState(p_inputLayout, p_vs, p_ps);
 		cmdMgr->setPSO(p_pso);
-		getDisplay()->onSize();
+		//getDisplay()->onSize();
 	}
 
 	if (GetAsyncKeyState('N') & 0x8000)
@@ -148,12 +158,8 @@ void BoxApp::onUpdate(float deltaTime)
 	DirectX::XMMATRIX V = DirectX::XMMatrixLookAtLH(pos, target, up);
 	DirectX::XMStoreFloat4x4(&p_view, V);
 
-	DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, float(width) / height, 1.0f, 1000.0f);
-	DirectX::XMStoreFloat4x4(&p_proj, P);
-
-	DirectX::XMStoreFloat4x4(&p_world, DirectX::XMMatrixIdentity());
-
 	DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4(&p_world);
+	DirectX::XMMATRIX P = DirectX::XMLoadFloat4x4(&p_proj);
 	DirectX::XMMATRIX worlViewProj = world * V * P;
 
 	DirectX::XMStoreFloat4x4(&cb.worldViewProj, worlViewProj);

@@ -12,6 +12,7 @@ public:
 private:
 	D3D12_CPU_DESCRIPTOR_HANDLE depthStencilView() const;
 	D3D12_CPU_DESCRIPTOR_HANDLE currentBackBufferView(const SwapChainPtr& swapChain) const;
+	void createCbvDescriptorHeap(UINT numDescriptors);
 	
 	RenderSystem* p_system = nullptr;
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> p_rtvHeap;
@@ -25,5 +26,6 @@ private:
 	friend class SwapChain;
 	friend class CommandManager;
 	friend class ConstantBuffer;
+	friend class RenderSystem;
 };
 

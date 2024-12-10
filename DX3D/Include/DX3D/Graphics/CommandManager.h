@@ -14,11 +14,15 @@ public:
 	void resetCmdList();
 	void closeCmdList();
 
+	void setFence(UINT64& fence);
+	void signal(UINT64& fence);
+
 	void setViewportSize();
 	void clearRenderTargetColor(float red, float green, float blue, float alpha);
 	void clearRenderTargetColor(DirectX::XMVECTORF32 color);
 
 	void begin();
+	void begin(ID3D12CommandAllocator* alloc);
 	void finish();
 
 	void setPSO(const PipelineStatePtr& PSO);
@@ -30,6 +34,7 @@ public:
 	void setIndexBuffer(const IndexBufferPtr& indexBuffer);
 
 	void setDescriptorTable();
+	void setDescriptorTable(UINT rootParameter, int cbvOffset);
 
 	void drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex);
 

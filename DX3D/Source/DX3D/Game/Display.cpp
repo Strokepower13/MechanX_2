@@ -19,8 +19,8 @@ Display::~Display()
 void Display::onSize()
 {
 	p_swapChain->resize((p_clientWidth > 1) ? p_clientWidth : 1, (p_clientHeight > 1) ? p_clientHeight : 1);
-	if (p_game->getGraphicsEngine()->getRenderSystem()->getMSAAState())
-		p_msaaRes->resize((p_clientWidth > 1) ? p_clientWidth : 1, (p_clientHeight > 1) ? p_clientHeight : 1);
+	//if (p_game->getGraphicsEngine()->getRenderSystem()->getMSAAState())
+	p_msaaRes->resize((p_clientWidth > 1) ? p_clientWidth : 1, (p_clientHeight > 1) ? p_clientHeight : 1);
 	p_game->onDisplaySize(p_clientWidth, p_clientHeight);
 }
 

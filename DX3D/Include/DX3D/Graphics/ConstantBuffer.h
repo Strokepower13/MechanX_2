@@ -6,9 +6,13 @@
 class ConstantBuffer
 {
 public:
-	ConstantBuffer(UINT sizeData, UINT elementCount, RenderSystem* system);
+	ConstantBuffer(UINT sizeData, UINT elementCount, bool withoutCBV, RenderSystem* system);
 	~ConstantBuffer();
+
 	void update(int elementIndex, const void* data);
+	void createCbvForSomeObjects(UINT numResource, UINT objectsCount);
+	void createCbv(UINT numResource, UINT cbvOffset);
+
 private:
 	Microsoft::WRL::ComPtr<ID3D12Resource> p_buffer;
 	RenderSystem* p_system;

@@ -17,10 +17,12 @@
 #include <DX3D/Game/GameTimer.h>
 #include <DX3D/Input/InputSystem.h>
 
-//#include <DX3D/Utilities/GeometryGenerator.h>
+#include <DX3D/Utilities/GeometryGenerator.h>
 //#include <DX3D/Utilities/Lighting.h>
 //#include <DX3D/Utilities/Waves.h>
 //#include <DX3D/Utilities/Effect.h>
 //#include <DX3D/Utilities/MathHelper.h>
 
 #include <DX3D/Graphics/MSAAResources.h>
+#include <DX3D/Resources/Mesh.h>
+#include <DX3D/Resources/FrameResource.h>

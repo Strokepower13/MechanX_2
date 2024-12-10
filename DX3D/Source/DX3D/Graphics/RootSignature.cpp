@@ -2,15 +2,9 @@
 #include <DX3D/Graphics/RenderSystem.h>
 #include <d3dx12.h>
 
-RootSignature::RootSignature(RenderSystem* system) : p_system(system)
+RootSignature::RootSignature(const D3D12_ROOT_PARAMETER* rootParameter, UINT numParameters, RenderSystem* system) : p_system(system)
 {
-	CD3DX12_ROOT_PARAMETER slotRootParameter[1]{};
-
-	CD3DX12_DESCRIPTOR_RANGE cbvTable{};
-	cbvTable.Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
-	slotRootParameter[0].InitAsDescriptorTable(1, &cbvTable);
-
-	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(1, slotRootParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+	CD3DX12_ROOT_SIGNATURE_DESC rootSigDesc(numParameters, rootParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 	Microsoft::WRL::ComPtr<ID3DBlob> serializedRootSig = nullptr;
 	Microsoft::WRL::ComPtr<ID3DBlob> errorBlob = nullptr;

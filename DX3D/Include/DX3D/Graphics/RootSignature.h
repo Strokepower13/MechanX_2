@@ -6,7 +6,7 @@
 class RootSignature
 {
 public:
-	RootSignature(RenderSystem* system);
+	RootSignature(const D3D12_ROOT_PARAMETER* rootParameter, UINT numParameters, RenderSystem* system);
 	~RootSignature();
 
 private:

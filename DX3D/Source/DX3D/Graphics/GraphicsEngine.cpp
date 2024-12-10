@@ -1,6 +1,5 @@
 #include <DX3D/Graphics/GraphicsEngine.h>
 #include <DX3D/Graphics/RenderSystem.h>
-//#include <DX3D/Graphics/DeviceContext.h>
 #include <DX3D/Graphics/SwapChain.h>
 
 #include <DX3D/Game/Game.h>
@@ -19,7 +18,6 @@ GraphicsEngine::~GraphicsEngine()
 void GraphicsEngine::update()
 {
     auto& swapChain = p_game->p_display->p_swapChain;
-   // auto context = p_renderSystem->getImmediateDeviceContext();
     //p_renderSystem->clearState();
 
     //context->clearRenderTargetColor(swapChain, 0, 1, 1, 1);

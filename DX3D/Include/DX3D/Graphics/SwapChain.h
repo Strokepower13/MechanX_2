@@ -13,7 +13,7 @@ public:
 
 	void setFullscreen(bool fullscreen, unsigned int width, unsigned int height);
 	void resize(unsigned int width, unsigned int height);
-	void present(bool vsync);
+	void present(bool vsync, bool flush = false);
 private:
 	void reloadBuffers(unsigned int width, unsigned int height);
 

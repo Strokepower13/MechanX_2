@@ -36,7 +36,6 @@ VertexBuffer::VertexBuffer(const void* data, UINT sizeVertex, UINT sizeList, Ren
 	UpdateSubresources<1>(cmdList.Get(), p_buffer.Get(), p_uploadBuffer.Get(), 0, 0, 1, &subResourceData);
 	auto barrier2 = CD3DX12_RESOURCE_BARRIER::Transition(p_buffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_GENERIC_READ);
 	cmdList->ResourceBarrier(1, &barrier2);
-
 }
 
 VertexBuffer::~VertexBuffer()

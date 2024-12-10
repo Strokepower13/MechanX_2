@@ -21,6 +21,7 @@ Game::~Game()
 void Game::run()
 {
 	onCreate();
+	onResize();
 
 	MSG msg = {};
 
@@ -100,6 +101,7 @@ void Game::calculateFrameStats()
 
 void Game::onDisplaySize(int width, int height)
 {
+	onResize();
 	onInternalUpdate();
 }
 

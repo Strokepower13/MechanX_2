@@ -69,8 +69,29 @@ void CommandManager::closeCmdList()
 
 	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
 	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+}
 
-	this->flushCommandQueue();
+void CommandManager::setFence(UINT64& fence)
+{
+	if (fence != 0 && p_fence->GetCompletedValue() < fence)
+	{
+		HANDLE eventHandle = CreateEventEx(nullptr, NULL, false, EVENT_ALL_ACCESS);
+		HRESULT hr = p_fence->SetEventOnCompletion(fence, eventHandle);
+		if (FAILED(hr))
+			DX3DError("CommandManager::fk error.");
+
+		if(eventHandle)
+		{
+			WaitForSingleObject(eventHandle, INFINITE);
+			CloseHandle(eventHandle);
+		}
+	}
+}
+
+void CommandManager::signal(UINT64& fence)
+{
+	fence = ++p_currentFence;
+	p_commandQueue->Signal(p_fence.Get(), p_currentFence);
 }
 
 void CommandManager::setViewportSize()
@@ -146,6 +167,26 @@ void CommandManager::begin()
 	}
 }
 
+void CommandManager::begin(ID3D12CommandAllocator* alloc)
+{
+	HRESULT hr = p_commandList->Reset(alloc, p_PSO.Get());
+	if (FAILED(hr))
+		DX3DError("CommandManager::begin error.");
+
+	if (p_system->p_4xMsaaState)
+	{
+		auto& msaaRes = p_system->p_msaaRes;
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(msaaRes->p_renderTarget.Get(), D3D12_RESOURCE_STATE_RESOLVE_SOURCE, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
+
+	else
+	{
+		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(p_system->p_swapChain->currentBackBuffer(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		p_commandList->ResourceBarrier(1, &barrier);
+	}
+}
+
 void CommandManager::finish()
 {
 	auto backBuffer = p_system->p_swapChain->currentBackBuffer();
@@ -179,6 +220,7 @@ void CommandManager::finish()
 
 void CommandManager::setPSO(const PipelineStatePtr& PSO)
 {
+	flushCommandQueue();
 	this->p_PSO = PSO->p_PSO;
 }
 
@@ -208,6 +250,13 @@ void CommandManager::setIndexBuffer(const IndexBufferPtr& indexBuffer)
 void CommandManager::setDescriptorTable()
 {
 	p_commandList->SetGraphicsRootDescriptorTable(0, p_system->p_descriptorHeap->p_cbvHeap->GetGPUDescriptorHandleForHeapStart());
+}
+
+void CommandManager::setDescriptorTable(UINT rootParameter, int cbvOffset)
+{
+	auto passCbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(p_system->p_descriptorHeap->p_cbvHeap->GetGPUDescriptorHandleForHeapStart());
+	passCbvHandle.Offset(cbvOffset, p_system->p_descriptorHeap->p_cbvSrvUavDescriptorSize);
+	p_commandList->SetGraphicsRootDescriptorTable(rootParameter, passCbvHandle);
 }
 
 void CommandManager::drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex)

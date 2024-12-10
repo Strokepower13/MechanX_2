@@ -23,12 +23,12 @@ public:
 	~RenderSystem();
 
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
-	//SwapChainPtr createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height);
 	CommandManagerPtr getCommandMgr();
 
 	VertexBufferPtr createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList);
 	IndexBufferPtr createIndexBuffer(const void* data, UINT sizeVertex, UINT sizeList);
-	ConstantBufferPtr createConstantBuffer(UINT sizeData, UINT elementCount);
+	ConstantBufferPtr createConstantBuffer(UINT sizeData, UINT elementCount, bool withoutCBV = false);
+
 	PipelineStatePtr createPipelineState(const InputLayoutPtr& inputLayout, const VertexShaderPtr& vs, const PixelShaderPtr& ps);
 	VertexShaderPtr createVertexShader(const wchar_t* fullPath);
 	//GeometryShaderPtr createGeometryShader(const wchar_t* fullPath, const char* entryPoint);
@@ -46,7 +46,10 @@ public:
 
 	MSAAResourcesPtr createMSAAResources(UINT width, UINT height);
 	void setMSAAState(bool state);
-	bool getMSAAState();
+	bool getMSAAState() const;
+
+	RootSignaturePtr createRootSignature(const D3D12_ROOT_PARAMETER* rootParameter, UINT numParameters);
+	void createCbvDescriptorHeap(UINT numDescriptors);
 
 private:
 	void logAdapters();
@@ -89,5 +92,6 @@ private:
 	friend class BlendState;
 	friend class DepthStencilState;
 	friend class MSAAResources;
+	friend class FrameResource;
 };
 

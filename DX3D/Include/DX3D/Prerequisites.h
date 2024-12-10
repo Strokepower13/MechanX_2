@@ -21,6 +21,7 @@ class Effect;
 class RenderSystem;
 class GraphicsEngine;
 class MSAAResources;
+class FrameResource;
 
 class GameTimer;
 class Window;

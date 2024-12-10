@@ -3,7 +3,7 @@
 #include <DX3D/Graphics/DescriptorHeap.h>
 #include <d3dx12.h>
 
-ConstantBuffer::ConstantBuffer(UINT sizeData, UINT elementCount, RenderSystem* system) : p_system(system)
+ConstantBuffer::ConstantBuffer(UINT sizeData, UINT elementCount, bool withoutCBV, RenderSystem* system) : p_system(system)
 {
 	p_sizeData = sizeData;
 	p_elementByteSize = (sizeData + 255) & ~255;
@@ -21,18 +21,21 @@ ConstantBuffer::ConstantBuffer(UINT sizeData, UINT elementCount, RenderSystem* s
 	if (FAILED(hr))
 		DX3DError("ConstantBuffer not created successfully.");
 
-	D3D12_GPU_VIRTUAL_ADDRESS cbAdress = p_buffer->GetGPUVirtualAddress();
+	if (!withoutCBV)
+	{
+		D3D12_GPU_VIRTUAL_ADDRESS cbAdress = p_buffer->GetGPUVirtualAddress();
 
-	int boxCBufIndex = 0;
+		int boxCBufIndex = 0;
 
-	cbAdress += (UINT64)boxCBufIndex * (UINT64)p_elementByteSize;
+		cbAdress += (UINT64)boxCBufIndex * (UINT64)p_elementByteSize;
 
-	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-	cbvDesc.BufferLocation = cbAdress;
-	cbvDesc.SizeInBytes = p_elementByteSize;
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+		cbvDesc.BufferLocation = cbAdress;
+		cbvDesc.SizeInBytes = p_elementByteSize;
 
-	auto& descriptorHeap = p_system->p_descriptorHeap;
-	device->CreateConstantBufferView(&cbvDesc, descriptorHeap->p_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+		auto& descriptorHeap = p_system->p_descriptorHeap;
+		device->CreateConstantBufferView(&cbvDesc, descriptorHeap->p_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+	}
 }
 
 ConstantBuffer::~ConstantBuffer()
@@ -46,4 +49,42 @@ ConstantBuffer::~ConstantBuffer()
 void ConstantBuffer::update(int elementIndex, const void* data)
 {
 	memcpy(&p_mappedData[elementIndex * p_elementByteSize], data, p_sizeData);
+}
+
+void ConstantBuffer::createCbvForSomeObjects(UINT numResource, UINT objectsCount)
+{
+	auto& device = p_system->p_d3dDevice;
+
+	for (UINT i = 0; i < objectsCount; ++i)
+	{
+		D3D12_GPU_VIRTUAL_ADDRESS cbAdress = p_buffer->GetGPUVirtualAddress();
+		cbAdress += static_cast<unsigned long long>(i) * p_elementByteSize;
+
+		int heapIndex = numResource * objectsCount + i;
+		auto& descriptorHeap = p_system->p_descriptorHeap;
+		auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descriptorHeap->p_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+		handle.Offset(heapIndex, descriptorHeap->p_cbvSrvUavDescriptorSize);
+
+		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+		cbvDesc.BufferLocation = cbAdress;
+		cbvDesc.SizeInBytes = p_elementByteSize;
+
+		device->CreateConstantBufferView(&cbvDesc, handle);
+	}
+}
+
+void ConstantBuffer::createCbv(UINT numResource, UINT cbvOffset)
+{
+	D3D12_GPU_VIRTUAL_ADDRESS cbAdress = p_buffer->GetGPUVirtualAddress();
+
+	int heapIndex = cbvOffset + numResource;
+	auto& descriptorHeap = p_system->p_descriptorHeap;
+	auto handle = CD3DX12_CPU_DESCRIPTOR_HANDLE(descriptorHeap->p_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+	handle.Offset(heapIndex, descriptorHeap->p_cbvSrvUavDescriptorSize);
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+	cbvDesc.BufferLocation = cbAdress;
+	cbvDesc.SizeInBytes = p_elementByteSize;
+
+	p_system->p_d3dDevice->CreateConstantBufferView(&cbvDesc, handle);
 }

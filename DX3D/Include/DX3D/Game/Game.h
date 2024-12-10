@@ -18,6 +18,7 @@ public:
 
 protected:
 	virtual void onCreate() {}
+	virtual void onResize() {}
 	virtual void onUpdate(float deltaTime) {}
 	virtual void onQuit() {}
 

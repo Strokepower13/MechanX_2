@@ -15,10 +15,11 @@ public:
 		if (isConstantBuffer)
 			p_elementByteSize = (sizeof(T) + 255) & ~255;
 
-		auto qw = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		auto zx = CD3DX12_RESOURCE_DESC::Buffer(p_elementByteSize * static_cast<UINT64>(elementCount));
-		HRESULT hr = device->CreateCommittedResource(&qw, D3D12_HEAP_FLAG_NONE,
-			&zx, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&p_uploadBuffer));
+		auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(p_elementByteSize * static_cast<UINT64>(elementCount));
+
+		HRESULT hr = device->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE,
+			&resourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&p_uploadBuffer));
 		if (FAILED(hr))
 			DX3DError("UploadBuffer: constructor error.");
 

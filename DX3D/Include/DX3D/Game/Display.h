@@ -9,7 +9,7 @@ public:
 	~Display();
 	SwapChainPtr getSwapChain();
 
-public:
+protected:
 	virtual void onSize();
 
 private:

@@ -74,7 +74,7 @@ RenderSystem::RenderSystem()
 
     p_descriptorHeap = std::make_shared <DescriptorHeap>(this);
 
-    p_rootSignature = std::make_shared <RootSignature>(this);
+    //p_rootSignature = std::make_shared <RootSignature>(this);
 }
 
 RenderSystem::~RenderSystem()
@@ -88,11 +88,6 @@ SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
     p_swapChain = std::make_shared <SwapChain>(hwnd, width, height, this);
     return p_swapChain;
 }
-
-//SwapChainPtr RenderSystem::createSwapChain4xMsaa(HWND hwnd, UINT width, UINT height)
-//{
-//    return std::make_shared <SwapChain>(hwnd, width, height, this, true);
-//}
 
 CommandManagerPtr RenderSystem::getCommandMgr()
 {
@@ -109,9 +104,9 @@ IndexBufferPtr RenderSystem::createIndexBuffer(const void* data, UINT sizeVertex
     return std::make_shared<IndexBuffer>(data, sizeVertex, sizeList, this);
 }
 
-ConstantBufferPtr RenderSystem::createConstantBuffer(UINT sizeData, UINT elementCount)
+ConstantBufferPtr RenderSystem::createConstantBuffer(UINT sizeData, UINT elementCount, bool withoutCBV)
 {
-    return std::make_shared<ConstantBuffer>(sizeData, elementCount, this);
+    return std::make_shared<ConstantBuffer>(sizeData, elementCount, withoutCBV, this);
 }
 
 PipelineStatePtr RenderSystem::createPipelineState(const InputLayoutPtr& inputLayout, const VertexShaderPtr& vs, const PixelShaderPtr& ps)
@@ -182,9 +177,20 @@ void RenderSystem::setMSAAState(bool state)
         p_4xMsaaState = state;
 }
 
-bool RenderSystem::getMSAAState()
+bool RenderSystem::getMSAAState() const
 {
     return p_4xMsaaState;
+}
+
+RootSignaturePtr RenderSystem::createRootSignature(const D3D12_ROOT_PARAMETER* rootParameter, UINT numParameters)
+{
+    p_rootSignature = std::make_shared <RootSignature>(rootParameter, numParameters, this);
+    return p_rootSignature;
+}
+
+void RenderSystem::createCbvDescriptorHeap(UINT numDescriptors)
+{
+    p_descriptorHeap->createCbvDescriptorHeap(numDescriptors);
 }
 
 void RenderSystem::logAdapters()

@@ -68,7 +68,7 @@ void SwapChain::resize(unsigned int width, unsigned int height)
 	reloadBuffers(width, height);
 }
 
-void SwapChain::present(bool vsync)
+void SwapChain::present(bool vsync, bool flush)
 {
 	HRESULT hr = p_swapChain->Present(vsync, NULL);
 	if (FAILED(hr))
@@ -76,7 +76,8 @@ void SwapChain::present(bool vsync)
 
 	p_currBackBuffer = (p_currBackBuffer + 1) % p_swapChainBufferCount;
 
-	p_system->p_commandMgr->flushCommandQueue();
+	if (flush)
+		p_system->p_commandMgr->flushCommandQueue();
 }
 
 void SwapChain::reloadBuffers(unsigned int width, unsigned int height)
