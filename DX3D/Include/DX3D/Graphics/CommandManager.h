@@ -13,6 +13,7 @@ public:
 public:
 	void resetCmdList();
 	void closeCmdList();
+	void resize();
 
 	void setFence(UINT64& fence);
 	void signal(UINT64& fence);
@@ -35,12 +36,14 @@ public:
 
 	void setDescriptorTable();
 	void setDescriptorTable(UINT rootParameter, int cbvOffset);
+	void setCBV(UINT rootParameter, const ConstantBufferPtr& constantBuffer);
+	void setCBV(UINT rootParameter, UINT cbIndex, const ConstantBufferPtr& constantBuffer);
 
 	void drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex);
+	void flushCommandQueue();
 
 protected:
 	void reset();
-	void flushCommandQueue();
 
 private:
 	RenderSystem* p_system = nullptr;

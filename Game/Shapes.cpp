@@ -217,8 +217,7 @@ void Shapes::onResize()
 {
 	auto cmd = getGraphicsEngine()->getRenderSystem()->getCommandMgr();
 
-	cmd->begin();
-	cmd->finish();
+	cmd->resize();
 	
 	auto AR = getDisplay()->getAspectRatio();
 	DirectX::XMMATRIX P = DirectX::XMMatrixPerspectiveFovLH(0.25f * DirectX::XM_PI, AR, 1.0f, 1000.0f);
@@ -294,7 +293,7 @@ void Shapes::onUpdate(float deltaTime)
 			DirectX::XMMATRIX world = DirectX::XMLoadFloat4x4(&e->world);
 
 			ObjectConstants objConstants;
-			XMStoreFloat4x4(&objConstants.World, world);
+			XMStoreFloat4x4(&objConstants.world, world);
 
 			currObjectCB->update(e->objCBIndex, &objConstants);
 
@@ -317,25 +316,25 @@ void Shapes::onUpdate(float deltaTime)
 	auto clientWidth = getDisplay()->getClientWidth();
 	auto clientHeight = getDisplay()->getClientHeight();
 
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.View, view);
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.InvView, invView);
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.Proj, proj);
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.InvProj, invProj);
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.ViewProj, viewProj);
-	DirectX::XMStoreFloat4x4(&p_mainPassCB.InvViewProj, invViewProj);
-	p_mainPassCB.EyePosW = p_eyePos;
-	p_mainPassCB.RenderTargetSize = DirectX::XMFLOAT2((float)clientWidth, (float)clientHeight);
-	p_mainPassCB.InvRenderTargetSize = DirectX::XMFLOAT2(1.0f / clientWidth, 1.0f / clientHeight);
-	p_mainPassCB.NearZ = 1.0f;
-	p_mainPassCB.FarZ = 1000.0f;
-	p_mainPassCB.TotalTime = getTimer()->totalTime();
-	p_mainPassCB.DeltaTime = deltaTime;
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.view, view);
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.invView, invView);
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.proj, proj);
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.invProj, invProj);
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.viewProj, viewProj);
+	DirectX::XMStoreFloat4x4(&p_mainPassCB.invViewProj, invViewProj);
+	p_mainPassCB.eyePosW = p_eyePos;
+	p_mainPassCB.renderTargetSize = DirectX::XMFLOAT2((float)clientWidth, (float)clientHeight);
+	p_mainPassCB.invRenderTargetSize = DirectX::XMFLOAT2(1.0f / clientWidth, 1.0f / clientHeight);
+	p_mainPassCB.nearZ = 1.0f;
+	p_mainPassCB.farZ = 1000.0f;
+	p_mainPassCB.totalTime = getTimer()->totalTime();
+	p_mainPassCB.deltaTime = deltaTime;
 
 	auto& currPassCB = p_currFrameResource->p_passCB;
 	currPassCB->update(0, &p_mainPassCB);
 
 	auto& cmdListAlloc = p_currFrameResource->p_cmdListAlloc;
-	HRESULT hr = cmdListAlloc->Reset();
+	//HRESULT hr = cmdListAlloc->Reset();
 
 	//Begin drawing
 	cmdMgr->begin(cmdListAlloc.Get());

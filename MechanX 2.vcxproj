@@ -159,9 +159,12 @@
     <ClCompile Include="DX3D\Source\DX3D\Graphics\MSAAResources.cpp" />
     <ClCompile Include="Game\Shapes.cpp" />
     <ClCompile Include="DX3D\Source\DX3D\Utilities\GeometryGenerator.cpp" />
+    <ClCompile Include="DX3D\Source\DX3D\Utilities\Waves.cpp" />
+    <ClCompile Include="Game\WavesDemo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DX3D\Include\DX3D\Graphics\ConstantBuffer.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Utilities\MathHelper.h" />
     <ClInclude Include="DX3D\Include\DX3D\Utilities\ReadData.h" />
     <ClInclude Include="DX3D\Include\DX3D\Utilities\UploadBuffer.h" />
     <ClInclude Include="DX3D\Include\DX3D\Resources\FrameResource.h" />
@@ -189,6 +192,8 @@
     <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexShader.h" />
     <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexBuffer.h" />
     <ClInclude Include="Game\Shapes.h" />
+    <ClInclude Include="DX3D\Include\DX3D\Utilities\Waves.h" />
+    <ClInclude Include="Game\WavesDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

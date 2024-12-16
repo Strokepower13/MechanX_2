@@ -1,4 +1,4 @@
-#include "Shapes.h"
+#include "WavesDemo.h"
 
 extern "C" { __declspec(dllexport) extern const UINT D3D12SDKVersion = 614; }
 
@@ -12,7 +12,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	
 	try
 	{
-		Shapes game(hInstance);
+		WavesDemo game(hInstance);
 		game.run();
 	}
 	catch (...)

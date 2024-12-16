@@ -43,8 +43,13 @@ void Game::run()
 			}
 		}
 		p_timer->tick();
-		calculateFrameStats();
-		onInternalUpdate();
+		if (!p_isPaused)
+		{
+			calculateFrameStats();
+			onInternalUpdate();
+		}
+		else
+			Sleep(100);
 	}
 	p_timer->stop();
 	onQuit();
@@ -102,7 +107,7 @@ void Game::calculateFrameStats()
 void Game::onDisplaySize(int width, int height)
 {
 	onResize();
-	onInternalUpdate();
+	//onInternalUpdate();
 }
 
 void Game::onInternalUpdate()
@@ -110,4 +115,14 @@ void Game::onInternalUpdate()
 	p_inputSystem->update();
 	onUpdate(p_timer.get()->deltaTime());
 	//p_graphicsEngine->update();
+}
+
+void Game::setPause(bool isPaused)
+{
+	if (isPaused)
+		p_timer->stop();
+	else
+		p_timer->start();
+
+	p_isPaused = isPaused;
 }

@@ -6,6 +6,7 @@
 #include <DX3D/Graphics/PipelineState.h>
 #include <DX3D/Graphics/VertexBuffer.h>
 #include <DX3D/Graphics/IndexBuffer.h>
+#include <DX3D/Graphics/ConstantBuffer.h>
 #include <d3dx12.h>
 
 #include <DX3D/Graphics/MSAAResources.h>
@@ -69,6 +70,12 @@ void CommandManager::closeCmdList()
 
 	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
 	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+}
+
+void CommandManager::resize()
+{
+	reset();
+	closeCmdList();
 }
 
 void CommandManager::setFence(UINT64& fence)
@@ -169,7 +176,11 @@ void CommandManager::begin()
 
 void CommandManager::begin(ID3D12CommandAllocator* alloc)
 {
-	HRESULT hr = p_commandList->Reset(alloc, p_PSO.Get());
+	HRESULT hr = alloc->Reset();
+	if (FAILED(hr))
+		DX3DError("CommandManager::begin error.");
+
+	hr = p_commandList->Reset(alloc, p_PSO.Get());
 	if (FAILED(hr))
 		DX3DError("CommandManager::begin error.");
 
@@ -209,13 +220,7 @@ void CommandManager::finish()
 		p_commandList->ResourceBarrier(1, &barrier);
 	}
 
-
-	HRESULT hr = p_commandList->Close();
-	if (FAILED(hr))
-		DX3DError("CommandManager::finish error.");
-
-	ID3D12CommandList* cmdsLists[] = { p_commandList.Get() };
-	p_commandQueue->ExecuteCommandLists(_countof(cmdsLists), cmdsLists);
+	closeCmdList();
 }
 
 void CommandManager::setPSO(const PipelineStatePtr& PSO)
@@ -257,6 +262,18 @@ void CommandManager::setDescriptorTable(UINT rootParameter, int cbvOffset)
 	auto passCbvHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(p_system->p_descriptorHeap->p_cbvHeap->GetGPUDescriptorHandleForHeapStart());
 	passCbvHandle.Offset(cbvOffset, p_system->p_descriptorHeap->p_cbvSrvUavDescriptorSize);
 	p_commandList->SetGraphicsRootDescriptorTable(rootParameter, passCbvHandle);
+}
+
+void CommandManager::setCBV(UINT rootParameter, const ConstantBufferPtr& constantBuffer)
+{
+	p_commandList->SetGraphicsRootConstantBufferView(rootParameter, constantBuffer->p_buffer->GetGPUVirtualAddress());
+}
+
+void CommandManager::setCBV(UINT rootParameter, UINT cbIndex, const ConstantBufferPtr& constantBuffer)
+{
+	D3D12_GPU_VIRTUAL_ADDRESS objCBAddress = constantBuffer->p_buffer->GetGPUVirtualAddress();
+	objCBAddress += static_cast<unsigned long long>(cbIndex) * constantBuffer->p_elementByteSize;
+	p_commandList->SetGraphicsRootConstantBufferView(rootParameter, objCBAddress);
 }
 
 void CommandManager::drawIndexedTriangleList(UINT indexCount, UINT startIndexLocation, UINT startVertexIndex)

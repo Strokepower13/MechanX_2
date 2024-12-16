@@ -12,8 +12,6 @@ public:
 	int getClientWidth() const;
 	int getClientHeight() const;
 	float getAspectRatio() const;
-	void setClientWidth(int width);
-	void setClientHeight(int height);
 
 	virtual void onCreate();
 	virtual void onUpdate();
@@ -23,8 +21,17 @@ public:
 	virtual void onSize();
 
 protected:
+	void setClientWidth(int width);
+	void setClientHeight(int height);
+
 	HINSTANCE p_hInstance;
 	HWND p_hWnd;
 	int p_clientWidth = 1024;
 	int p_clientHeight = 768;
+
+	bool p_minimized = false;
+	bool p_maximized = false;
+	bool p_resizing = false;
+
+	friend LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 };

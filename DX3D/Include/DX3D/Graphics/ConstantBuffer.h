@@ -20,4 +20,6 @@ private:
 
 	UINT p_elementByteSize = 0;
 	UINT p_sizeData = 0;
+
+	friend class CommandManager;
 };

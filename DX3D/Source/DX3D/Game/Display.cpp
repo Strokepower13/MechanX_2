@@ -16,6 +16,16 @@ Display::~Display()
 {
 }
 
+void Display::onFocus()
+{
+	p_game->setPause(false);
+}
+
+void Display::onKillFocus()
+{
+	p_game->setPause(true);
+}
+
 void Display::onSize()
 {
 	p_swapChain->resize((p_clientWidth > 1) ? p_clientWidth : 1, (p_clientHeight > 1) ? p_clientHeight : 1);

@@ -26,6 +26,7 @@ private:
 	void calculateFrameStats();
 	void onDisplaySize(int width, int height);
 	void onInternalUpdate();
+	void setPause(bool isPaused);
 
 	std::unique_ptr<InputSystem> p_inputSystem;
 	std::unique_ptr<Display> p_display;
@@ -33,6 +34,7 @@ private:
 	std::unique_ptr<GraphicsEngine> p_graphicsEngine;
 
 	bool p_isRunning = true;
+	bool p_isPaused = false;
 
 	friend class GraphicsEngine;
 	friend class Display;

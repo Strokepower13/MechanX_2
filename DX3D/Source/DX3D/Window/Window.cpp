@@ -17,7 +17,40 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		{
 			window->setClientWidth(LOWORD(lParam));
 			window->setClientHeight(HIWORD(lParam));
-			window->onSize();
+
+			if (wParam == SIZE_MINIMIZED)
+			{
+				window->p_minimized = true;
+				window->p_maximized = false;
+			}
+			else if (wParam == SIZE_MAXIMIZED)
+			{
+				window->p_minimized = false;
+				window->p_maximized = true;
+				window->onSize();
+			}
+			else if (wParam == SIZE_RESTORED)
+			{
+				if (window->p_minimized)
+				{
+					window->p_minimized = false;
+					window->onSize();
+				}
+
+				else if (window->p_maximized)
+				{
+					window->p_maximized = false;
+					window->onSize();
+				}
+				else if (window->p_resizing)
+				{
+					break;
+				}
+				else
+				{
+					window->onSize();
+				}
+			}
 		}
 		break;
 	}
@@ -42,6 +75,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		DirectX::Mouse::ProcessMessage(msg, wParam, lParam);
 		break;
 
+	case WM_ENTERSIZEMOVE:
+	{
+		Window* window = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		if (window)
+		{
+			window->onKillFocus();
+			window->p_resizing = true;
+		}
+		break;
+	}
+
+	case WM_EXITSIZEMOVE:
+	{
+		Window* window = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+		if (window)
+		{
+			window->p_resizing = false;
+			window->onFocus();
+			window->onSize();
+		}
+		break;
+	}
+
 	case WM_SETFOCUS:
 	{
 		Window* window = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
@@ -52,14 +108,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_KILLFOCUS:
 	{
 		Window* window = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-		window->onKillFocus();
+		if (window) window->onKillFocus();
 		break;
 	}
 
 	case WM_DESTROY:
 	{
 		Window* window = (Window*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
-		window->onDestroy();
+		if (window) window->onDestroy();
 		break;
 	}
 
@@ -96,7 +152,7 @@ Window::Window(HINSTANCE hInstance)
 	int width = rc.right - rc.left;
 	int height = rc.bottom - rc.top;
 
-	p_hWnd = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, L"MechanXWindowClass", L"MechanX Application", WS_OVERLAPPEDWINDOW,
+	p_hWnd = CreateWindow(L"MechanXWindowClass", L"MechanX Application", WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT, width, height, NULL, NULL, p_hInstance, NULL);
 
 	if (!p_hWnd)

@@ -10,6 +10,8 @@ public:
 	SwapChainPtr getSwapChain();
 
 protected:
+	virtual void onFocus();
+	virtual void onKillFocus();
 	virtual void onSize();
 
 private:

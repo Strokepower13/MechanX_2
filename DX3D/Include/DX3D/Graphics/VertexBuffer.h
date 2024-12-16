@@ -7,7 +7,10 @@ class VertexBuffer
 {
 public:
 	VertexBuffer(const void* data, UINT sizeVertex, UINT sizeList, RenderSystem* system);
+	VertexBuffer(UINT sizeVertex, UINT sizeList, RenderSystem* system);
 	~VertexBuffer();
+
+	void update(int elementIndex, const void* data);
 
 private:
 	D3D12_VERTEX_BUFFER_VIEW getVBV();
@@ -17,6 +20,8 @@ private:
 
 	UINT p_sizeVertex;
 	UINT p_sizeList;
+
+	BYTE* p_mappedData = nullptr;
 
 	RenderSystem* p_system = nullptr;
 	friend class CommandManager;

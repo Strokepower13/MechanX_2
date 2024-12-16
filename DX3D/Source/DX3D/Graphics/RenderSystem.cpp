@@ -94,9 +94,12 @@ CommandManagerPtr RenderSystem::getCommandMgr()
     return this->p_commandMgr;
 }
 
-VertexBufferPtr RenderSystem::createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList)
+VertexBufferPtr RenderSystem::createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList, bool isDynamic)
 {
-    return std::make_shared<VertexBuffer>(data, sizeVertex, sizeList, this);
+    if (isDynamic)
+        return std::make_shared<VertexBuffer>(sizeVertex, sizeList, this);
+    else
+        return std::make_shared<VertexBuffer>(data, sizeVertex, sizeList, this);
 }
 
 IndexBufferPtr RenderSystem::createIndexBuffer(const void* data, UINT sizeVertex, UINT sizeList)
