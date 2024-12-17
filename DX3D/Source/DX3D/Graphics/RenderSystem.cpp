@@ -2,20 +2,21 @@
 #include <DX3D/Graphics/SwapChain.h>
 #include <DX3D/Graphics/CommandManager.h>
 #include <DX3D/Graphics/DescriptorHeap.h>
-#include <DX3D/Graphics/VertexBuffer.h>
-#include <DX3D/Graphics/IndexBuffer.h>
-#include <DX3D/Graphics/ConstantBuffer.h>
+#include <DX3D/Buffers/ConstantBuffer.h>
+#include <DX3D/Buffers/IndexBuffer.h>
+#include <DX3D/Buffers/VertexBuffer.h>
 #include <DX3D/Graphics/RootSignature.h>
 #include <DX3D/Graphics/PipelineState.h>
-#include <DX3D/Graphics/VertexShader.h>
+#include <DX3D/Shaders/VertexShader.h>
 //#include <DX3D/Graphics/GeometryShader.h>
-#include <DX3D/Graphics/PixelShader.h>
+#include <DX3D/Shaders/PixelShader.h>
 //#include <DX3D/Resources/Texture.h>
 //#include <DX3D/Resources/Texture2DArray.h>
 //#include <DX3D/States/RasterizerState.h>
 //#include <DX3D/States/BlendState.h>
 //#include <DX3D/States/DepthStencilState.h>
 #include <DX3D/Graphics/MSAAResources.h>
+#include <DX3D/Graphics/InputLayout.h>
 
 #include <d3dcompiler.h>
 #include <exception>
@@ -92,6 +93,11 @@ SwapChainPtr RenderSystem::createSwapChain(HWND hwnd, UINT width, UINT height)
 CommandManagerPtr RenderSystem::getCommandMgr()
 {
     return this->p_commandMgr;
+}
+
+InputLayoutPtr RenderSystem::createInputLayout(const InputLayoutType& inputLayoutType)
+{
+    return std::make_shared<InputLayout>(inputLayoutType);
 }
 
 VertexBufferPtr RenderSystem::createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList, bool isDynamic)

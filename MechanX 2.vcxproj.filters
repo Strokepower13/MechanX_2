@@ -51,22 +51,22 @@
     <ClCompile Include="DX3D\Source\DX3D\Graphics\DescriptorHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DX3D\Source\DX3D\Graphics\ConstantBuffer.cpp">
+    <ClCompile Include="DX3D\Source\DX3D\Buffers\ConstantBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DX3D\Source\DX3D\Graphics\RootSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DX3D\Source\DX3D\Graphics\VertexShader.cpp">
+    <ClCompile Include="DX3D\Source\DX3D\Shaders\VertexShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DX3D\Source\DX3D\Graphics\PixelShader.cpp">
+    <ClCompile Include="DX3D\Source\DX3D\Shaders\PixelShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DX3D\Source\DX3D\Graphics\VertexBuffer.cpp">
+    <ClCompile Include="DX3D\Source\DX3D\Buffers\VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DX3D\Source\DX3D\Graphics\IndexBuffer.cpp">
+    <ClCompile Include="DX3D\Source\DX3D\Buffers\IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DX3D\Source\DX3D\Graphics\PipelineState.cpp">
@@ -137,25 +137,25 @@
     <ClInclude Include="DX3D\Include\DX3D\Utilities\UploadBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX3D\Include\DX3D\Graphics\ConstantBuffer.h">
+    <ClInclude Include="DX3D\Include\DX3D\Buffers\ConstantBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX3D\Include\DX3D\Graphics\RootSignature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexShader.h">
+    <ClInclude Include="DX3D\Include\DX3D\Shaders\VertexShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX3D\Include\DX3D\Utilities\ReadData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX3D\Include\DX3D\Graphics\PixelShader.h">
+    <ClInclude Include="DX3D\Include\DX3D\Shaders\PixelShader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX3D\Include\DX3D\Graphics\VertexBuffer.h">
+    <ClInclude Include="DX3D\Include\DX3D\Buffers\VertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DX3D\Include\DX3D\Graphics\IndexBuffer.h">
+    <ClInclude Include="DX3D\Include\DX3D\Buffers\IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DX3D\Include\DX3D\Graphics\PipelineState.h">

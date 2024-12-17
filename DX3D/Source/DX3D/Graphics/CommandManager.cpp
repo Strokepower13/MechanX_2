@@ -4,9 +4,9 @@
 #include <DX3D/Graphics/DescriptorHeap.h>
 #include <DX3D/Graphics/RootSignature.h>
 #include <DX3D/Graphics/PipelineState.h>
-#include <DX3D/Graphics/VertexBuffer.h>
-#include <DX3D/Graphics/IndexBuffer.h>
-#include <DX3D/Graphics/ConstantBuffer.h>
+#include <DX3D/Buffers/ConstantBuffer.h>
+#include <DX3D/Buffers/IndexBuffer.h>
+#include <DX3D/Buffers/VertexBuffer.h>
 #include <d3dx12.h>
 
 #include <DX3D/Graphics/MSAAResources.h>

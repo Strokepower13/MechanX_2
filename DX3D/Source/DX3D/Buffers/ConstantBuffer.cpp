@@ -1,4 +1,4 @@
-#include <DX3D/Graphics/ConstantBuffer.h>
+#include <DX3D/Buffers/ConstantBuffer.h>
 #include <DX3D/Graphics/RenderSystem.h>
 #include <DX3D/Graphics/DescriptorHeap.h>
 #include <d3dx12.h>

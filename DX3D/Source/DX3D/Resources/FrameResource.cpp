@@ -1,6 +1,6 @@
 #include <DX3D/Resources/FrameResource.h>
 #include <DX3D/Graphics/RenderSystem.h>
-#include <DX3D/Graphics/ConstantBuffer.h>
+#include <DX3D/Buffers/ConstantBuffer.h>
 
 FrameResource::FrameResource(UINT passCount, UINT objectCount, UINT numResource, UINT passCbvOffset, RenderSystem* system) :p_system(system)
 {

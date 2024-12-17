@@ -2,8 +2,8 @@
 #include <DX3D/Graphics/RenderSystem.h>
 #include <DX3D/Graphics/InputLayout.h>
 #include <DX3D/Graphics/RootSignature.h>
-#include <DX3D/Graphics/VertexShader.h>
-#include <DX3D/Graphics/PixelShader.h>
+#include <DX3D/Shaders/VertexShader.h>
+#include <DX3D/Shaders/PixelShader.h>
 
 #include <d3dx12.h>
 

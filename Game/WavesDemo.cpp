@@ -20,9 +20,9 @@ void WavesDemo::onCreate()
 
 	cmd->resetCmdList();
 
-	p_inputLayout = std::make_shared<InputLayout>(InputLayoutType::PosColor);
-
 	auto rs = getGraphicsEngine()->getRenderSystem();
+
+	p_inputLayout = rs->createInputLayout(InputLayoutType::PosColor);
 
 	CD3DX12_ROOT_PARAMETER slotRootParameter[2]{};
 	slotRootParameter[0].InitAsConstantBufferView(0);

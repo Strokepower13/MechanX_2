@@ -25,6 +25,8 @@ public:
 	SwapChainPtr createSwapChain(HWND hwnd, UINT width, UINT height);
 	CommandManagerPtr getCommandMgr();
 
+	InputLayoutPtr createInputLayout(const InputLayoutType& inputLayoutType);
+
 	VertexBufferPtr createVertexBuffer(const void* data, UINT sizeVertex, UINT sizeList, bool isDynamic = false);
 	IndexBufferPtr createIndexBuffer(const void* data, UINT sizeVertex, UINT sizeList);
 	ConstantBufferPtr createConstantBuffer(UINT sizeData, UINT elementCount, bool withoutCBV = false);
